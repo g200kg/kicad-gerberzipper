@@ -164,7 +164,7 @@ Windows の AppData は隠しフォルダになっている事に注意してく
 - Elecrow ステンシル付き
 - FusionPCB
 - JLCPCB
-- P板
+- P板.com
 - PCBWay
 
 (出力されたファイルは確認していますが、実際に発注して確認していないものも含みます)
