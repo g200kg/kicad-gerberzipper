@@ -23,7 +23,7 @@ Place the `action_menu_gerber_zipper` folder as it is in the KiCad script folder
   > `~/Library/Application Support/kicad/scripting/`
 
 <pre>
-.../kicad/scription/
+.../kicad/scripting/
      |
      +--- action_menu_gerber_zipper
              |
