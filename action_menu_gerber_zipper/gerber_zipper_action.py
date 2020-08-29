@@ -1,8 +1,8 @@
 # coding: utf-8
-# file : GerberZipper.py
+# file : gerber_zipper_action.py
 #
-# Copyright (C) 2018-2019 g200kg
-#   Released under Unlicense
+# Copyright (C) 2020 g200kg
+#   Released under MIT License
 #
 
 import pcbnew
