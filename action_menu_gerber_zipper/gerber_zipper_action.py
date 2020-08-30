@@ -115,6 +115,7 @@ default_settings = {
   "CoodinateFormat46":True,
   "SubtractMaskFromSilk":True,
   "UseExtendedX2format": False,
+  "IncludeNetlistInfo":False,
 
   "Drill": {
     "Drill":"",
@@ -213,6 +214,7 @@ class Editor():
         self.opt_SubtractMaskFromSilk = wx.CheckBox(self.panel, wx.ID_ANY, 'SubtractMaskFromSilk', pos=(230, 420))
         self.opt_UseExtendedX2format = wx.CheckBox(self.panel, wx.ID_ANY, 'UseExtendedX2format', pos=(230, 440))
         self.opt_CoodinateFormat46 = wx.CheckBox(self.panel, wx.ID_ANY, 'CoodinateFormat46', pos=(230, 460))
+        self.opt_IncludeNetlistInfo = wx.CheckBox(self.panel, wx.ID_ANY, 'IncludeNetlistInfo', pos=(230, 480))
 
         self.drill = wx.grid.Grid(self.panel, wx.ID_ANY, size=(162,130), pos=(420,240))
         self.drill.CreateGrid(5, 2)
@@ -269,6 +271,7 @@ class Editor():
         self.opt_SubtractMaskFromSilk.SetValue(self.settings.get('SubtractMaskFromSilk', False))
         self.opt_UseExtendedX2format.SetValue(self.settings.get('UseExtendedX2format', False))
         self.opt_CoodinateFormat46.SetValue(self.settings.get('CoodinateFormat46',True))
+        self.opt_IncludeNetlistInfo.SetValue(self.settings.get('IncludeNetlistInfo',False))
         self.opt_DrillUnit.SetSelection(1 if self.settings.get('DrillUnitMM',True) else 0)
         self.opt_MirrorYAxis.SetValue(self.settings.get('MirrorYAxis', False))
         self.opt_MinimalHeader.SetValue(self.settings.get('MinimalHeader', False))
@@ -313,6 +316,7 @@ class Editor():
         self.settings['SubtractMaskFromSilk'] = self.opt_SubtractMaskFromSilk.GetValue()
         self.settings['UseExtendedX2format'] = self.opt_UseExtendedX2format.GetValue()
         self.settings['CoodinateFormat46'] = self.opt_CoodinateFormat46.GetValue()
+        self.settings['IncludeNetlistInfo'] = self.opt_IncludeNetlistInfo.GetValue()
         self.settings['DrillUnitMM'] = True if self.opt_DrillUnit.GetSelection() else False
         self.settings['MirrorYAxis'] = self.opt_MirrorYAxis.GetValue()
         self.settings['MinimalHeader'] = self.opt_MinimalHeader.GetValue()
@@ -456,6 +460,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     po.SetLineWidth(FromMM(float(self.settings.get('LineWidth'))))
                     po.SetSubtractMaskFromSilk(self.settings.get('SubtractMaskFromSilk',True))
                     po.SetUseGerberX2format(self.settings.get('UseExtendedX2format',False))
+                    po.SetIncludeGerberNetlistInfo(self.settings.get('IncludeNetlistInfo',False))
                     po.SetGerberPrecision(6 if self.settings.get('CoodinateFormat46',True) else 5)
 #                   SetDrillMarksType() : Draw Drill point to Cu layers if 1 (default)
 #                                         But seems set to 0 in Plot Dialog

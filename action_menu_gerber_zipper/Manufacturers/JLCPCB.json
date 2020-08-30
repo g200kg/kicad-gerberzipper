@@ -34,6 +34,7 @@
   "CoodinateFormat46":true,
   "SubtractMaskFromSilk":true,
   "UseExtendedX2format": false,
+  "IncludeNetlistInfo":false,
 
   "Drill": {
     "Drill":"*.drl",
