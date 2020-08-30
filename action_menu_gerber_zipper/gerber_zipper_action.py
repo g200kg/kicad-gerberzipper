@@ -621,12 +621,11 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
 
                 # ZIP
                     message('Zip')
-                    with zipfile.ZipFile(zip_fname,'w') as f:
+                    with zipfile.ZipFile(zip_fname,'w',compression=zipfile.ZIP_DEFLATED) as f:
                         for i in range(len(zipfiles)):
                             fnam = zipfiles[i]
                             if os.path.exists(fnam):
                                 f.write(fnam, os.path.basename(fnam))
-                            f.write(fnam, os.path.basename(fnam))
                     wx.MessageBox(getstr('COMPLETE') % zip_fname, 'Gerber Zipper', wx.OK|wx.ICON_INFORMATION)
                 except Exception as err:
                     alert(err.message)
