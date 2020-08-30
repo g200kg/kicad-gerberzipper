@@ -65,7 +65,7 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 
 ##### Settings that require special attention
 - Layer
-   > Here, specify the layer and file name that need to be output. Therefore, there is no "Use Protel extension" option.
+   > Here, specify the layer and file name that need to be output. Therefore, there is no "Use Protel extension" option. For the inner layer, only the defined layers that have actual data will be output.
 - UseExtendedX2format
    > This is a new Gerber format, but many manufacturers do not support it.
 - MergePTHandNPTH
@@ -88,6 +88,7 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 | SubtractMaskFromSilk   | Make sure that silk printing does not cover areas where copper is exposed, such as pads. Normally check.
 | UseExtendedX2format    | Uses Gerber extended format. It is better not to check because there are many companies that do not support it.
 | CoodinateFormat46      | Set the coordinate accuracy to `4.6,unit mm`. You can select `4.5,unit mm` or `4.6,unit mm`, but in most cases `4.6,unit mm` can be used.
+| IncludeNetlistInfo     | This is an option to embed the netlist info in the Gerber. It is not normally used in data for the board manufacturer.
 | Drill                  | A drill file in Excellon format. Gerber X2 format is not supported.
 | DrillMap               | Drill map file. Some manufacturer may require it. The format depends on `MapFileFormat`.
 | NPTH                   | Drill file for non-plated holes. Not required if MergePTHandNPTH is checked.
@@ -171,7 +172,7 @@ Windows の AppData は隠しフォルダになっている事に注意してく
 
 ##### 特に注意が必要な設定
 - Layer
-  > ここで出力が必要なレイヤーとファイル名を指定します。そのため「Protel の拡張子を利用」のオプションはありません。
+  > ここで出力が必要なレイヤーとファイル名を指定します。そのため「Protel の拡張子を利用」のオプションはありません。また内層のレイヤーについては定義されているものの内、実際にデータが存在するレイヤーのみが出力されます。
 - UseExtendedX2format
   > ガーバーの新しいフォーマットですが、対応していない業者が多いです。
 - MergePTHandNPTH
@@ -195,6 +196,7 @@ Windows の AppData は隠しフォルダになっている事に注意してく
 | SubtractMaskFromSilk   | シルクをレジストで抜く | パッド等のレジストが無い部分にシルク印刷がかぶらないようにします。通常はチェックします。
 | UseExtendedX2format    | 拡張X2フォーマットを使用|ガーバーの拡張フォーマットを使用します。対応していない業者が多いためチェックしない方が良いです。
 | CoodinateFormat46      | 座標フォーマット|座標の精度を 4.6,単位 mm にします。4.5,単位 mm または 4.6,単位 mm の選択ですが、大抵の場合 4.6,単位 mm が使用できます。
+| IncludeNetlistInfo     | ガーバーデータにネットリスト情報を埋め込むオプションです。基板業者に渡すデータでは通常は使用されません。
 | Drill                  | |Excellon 形式のドリルファイルです。Gerber X2 はサポートしていません。
 | DrillMap               | |ドリルマップファイルです。業者によっては要求される場合があります。フォーマットは MapFileFormat に依存します。
 | NPTH                   | |メッキなし穴のドリルファイルです。MergePTHandNPTH がチェックされている場合は不要です。
