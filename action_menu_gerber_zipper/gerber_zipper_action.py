@@ -457,6 +457,9 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     po.SetSubtractMaskFromSilk(self.settings.get('SubtractMaskFromSilk',True))
                     po.SetUseGerberX2format(self.settings.get('UseExtendedX2format',False))
                     po.SetGerberPrecision(6 if self.settings.get('CoodinateFormat46',True) else 5)
+#                   SetDrillMarksType() : Draw Drill point to Cu layers if 1 (default)
+#                                         But seems set to 0 in Plot Dialog
+                    po.SetDrillMarksType(0)
                     layer = self.settings.get('Layers',{})
                     forcedel(zip_fname)
                     for i in layer:
@@ -616,6 +619,8 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     with zipfile.ZipFile(zip_fname,'w') as f:
                         for i in range(len(zipfiles)):
                             fnam = zipfiles[i]
+                            if os.path.exists(fnam):
+                                f.write(fnam, os.path.basename(fnam))
                             f.write(fnam, os.path.basename(fnam))
                     wx.MessageBox(getstr('COMPLETE') % zip_fname, 'Gerber Zipper', wx.OK|wx.ICON_INFORMATION)
                 except Exception as err:
