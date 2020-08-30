@@ -59,10 +59,6 @@ Place the `action_menu_gerber_zipper` folder as it is in the KiCad script folder
 
 (The output files have been reviewed, but this includes those that have not been actually ordered and verified.)
 
-#### Modify / Add settings yourself
-
-The settings are written in a `.json` file for each manufacturer in the `Manufacturers` folder. If the configuration file created by editing the existing file is placed here, options will be added.
-
 #### Modify/Add your own settings 
 
 Settings are written as `.json` files for each board manufacturer in the folder `Manufacturers`. Place the created configuration file here to add options.
