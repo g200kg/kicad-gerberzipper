@@ -97,6 +97,7 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 | MirrorYAxis            | Inverts the Y coordinate of the drill file. Not normally used.
 | MinimalHeader          | Minimizes the header part of the drill file. It is rarely used, but may be specified by some manufacturers.
 | MergePTHandNPTH        | Merge plated holes and unplated holes into one file. Often specified by the manufacturer.
+| RouteModeForOvalHoles  | Use route command for Oval Holes if checked (recommended).
 | Zoros                  | Select how to handle zeros. Many manufacturers use `DecimalFormats`, but different formats may be specified in some manufacturers.
 | MapFileFormat          | Select the map file format. The format will be specified by the manufacturer.
 | InstructionFile        | Creates the manufacturing standard document specified by P-Ban.com.
@@ -196,15 +197,16 @@ Windows の AppData は隠しフォルダになっている事に注意してく
 | SubtractMaskFromSilk   | シルクをレジストで抜く | パッド等のレジストが無い部分にシルク印刷がかぶらないようにします。通常はチェックします。
 | UseExtendedX2format    | 拡張X2フォーマットを使用|ガーバーの拡張フォーマットを使用します。対応していない業者が多いためチェックしない方が良いです。
 | CoodinateFormat46      | 座標フォーマット|座標の精度を 4.6,単位 mm にします。4.5,単位 mm または 4.6,単位 mm の選択ですが、大抵の場合 4.6,単位 mm が使用できます。
-| IncludeNetlistInfo     | ガーバーデータにネットリスト情報を埋め込むオプションです。基板業者に渡すデータでは通常は使用されません。
+| IncludeNetlistInfo     | ネットリスト属性を含む|ガーバーデータにネットリスト情報を埋め込むオプションです。基板業者に渡すデータでは通常は使用されません。
 | Drill                  | |Excellon 形式のドリルファイルです。Gerber X2 はサポートしていません。
 | DrillMap               | |ドリルマップファイルです。業者によっては要求される場合があります。フォーマットは MapFileFormat に依存します。
 | NPTH                   | |メッキなし穴のドリルファイルです。MergePTHandNPTH がチェックされている場合は不要です。
 | NPTHMap                | |メッキなし穴のマップファイルです。扱いは DrillMap に準じます。
 | Drill Unit             | ドリル単位|ドリルファイルの単位で mm か インチかを指定します。多くの場合 mm ですが業者によってインチが指定されている場合があります。
-| MirrorYAxis            | Y軸でミラードリルファイルのY座標を反転させます。通常は使用しません。
+| MirrorYAxis            | Y軸でミラー|Y軸でミラードリルファイルのY座標を反転させます。通常は使用しません。
 | MinimalHeader          | 最小のヘッダー|ドリルファイルのヘッダー部を最小化します。あまり使用されませんが業者による指定がある場合があります。
 | MergePTHandNPTH        | PTHとNPTHを一つのファイルにマージ|メッキ穴とメッキなし穴を1ファイルにまとめます。業者によって指定されている事が多いです。
+| RouteModeForOvalHoles  | 長円穴ドリルモード| チェックすると route コマンドを使用します(推奨)
 | Zoros                  | ゼロの扱い|ドリルファイルの少数の扱いを選択します。DecimalFormatが多いですが、違うフォーマットが指定されている場合もあります。
 | MapFileFormat          | マップファイルフォーマット|マップファイルのフォーマットを選択します。マップファイルが要求される場合はフォーマットも指定されます。
 | InstructionFile        | |P板.comで指定されている製造基準書を作成します。
