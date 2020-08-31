@@ -11,19 +11,23 @@ Gerber output for the specified board vendor is performed, and the process of zi
 
 ### Install
 
-Place the `action_menu_gerber_zipper` folder as it is in the KiCad script folder. The script folder depends on the OS.
+Place the `action_menu_gerber_zipper` folder as it is in the KiCad script folder. The script folder depends on the OS. 
 
 - Linux:
-  > `~/.config/kicad/scripting/`
+  > `~/.kicad/scripting/plugins`
 
 - Windows:
-  > `C:\Users\<UserName>\AppData\Roaming\kicad\scripting\`
+  > `C:\Users\<UserName>\AppData\Roaming\kicad\scripting\plugins`
 
 - MacOS:
-  > `~/Library/Application Support/kicad/scripting/`
+  > `~/Library/Application Support/kicad/scripting/plugins`  
+  > or  
+  > `~/Library/Preference/kicad/scriptions/plugins`
+
+The folder to put the script looks like this:
 
 <pre>
-.../kicad/scripting/
+.../kicad/scripting/plugins
      |
      +--- action_menu_gerber_zipper
              |
@@ -31,8 +35,16 @@ Place the `action_menu_gerber_zipper` folder as it is in the KiCad script folder
              +--- __init__.py
              +--- gerber_zipper_action.py
              +--- icon.png
-
 </pre>
+
+- Please note that Windows AppData is a hidden folder.
+
+- The folder where the script should be placed differs depending on the OS version etc. If it cannot launch at the above location, open Script Console from [Tools]-[Script Console] and enter the following command to confirm the folder.
+
+ ```
+ >>> import pcbnew
+ >>> print pcbnew.PLUGIN_DERECTORIES_SEARCH
+ ```
 
 ### Usage
 
@@ -117,18 +129,19 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 　`action_menu_gerber_zipper` のフォルダをそのまま KiCad のスクリプトフォルダに配置してください。スクリプトフォルダは OS によって異なります。
 
 - Linux:
-  > `~/.config/kicad/scripting/`
+  > `~/.kicad/scripting/plugins`
 
 - Windows:
-  > `C:\Users\<UserName>\AppData\Roaming\kicad\scripting\`
+  > `C:\Users\<UserName>\AppData\Roaming\kicad\scripting\plugins`
 
 - MacOS:
-  > `~/Library/Application Support/kicad/scripting/`
+  > `~/Library/Application Support/kicad/scripting/plugins`  
+  > または  
+  > `~/Library/Preference/kicad/scriptions/plugins`
 
-Windows の AppData は隠しフォルダになっている事に注意してください。
-
+スクリプトを置くフォルダは次のようになります:
 <pre>
-.../kicad/scripting/
+.../kicad/scripting/plugins
      |
      +--- action_menu_gerber_zipper
              |
@@ -138,6 +151,16 @@ Windows の AppData は隠しフォルダになっている事に注意してく
              +--- icon.png
 
 </pre>
+
+Windows の AppData は隠しフォルダになっている事に注意してください。
+
+スクリプトを置くフォルダは OS バージョン等で異なります。 上記の場所で起動できない場合、[ツール]-[スクリプトコンソール]　で スクリプトコンソールを開き、次のコマンドを入力する事で確認できます。
+
+```
+>>> import pcbnew
+>>> print pcbnew.PLUGIN_DERECTORIES_SEARCH
+```
+
 
 ### 使用法
 
