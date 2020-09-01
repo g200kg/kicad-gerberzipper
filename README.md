@@ -43,7 +43,7 @@ The folder to put the script looks like this:
 
  ```
  >>> import pcbnew
- >>> print pcbnew.PLUGIN_DERECTORIES_SEARCH
+ >>> print pcbnew.PLUGIN_DIRECTORIES_SEARCH
  ```
 
 ### Usage
@@ -158,7 +158,7 @@ Windows の AppData は隠しフォルダになっている事に注意してく
 
 ```
 >>> import pcbnew
->>> print pcbnew.PLUGIN_DERECTORIES_SEARCH
+>>> print pcbnew.PLUGIN_DIRECTORIES_SEARCH
 ```
 
 
