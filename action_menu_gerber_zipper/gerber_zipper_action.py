@@ -187,12 +187,14 @@ class Editor():
     def __init__(self, panel):
         self.panel = panel
         wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), pos=(1020,40))
-        wx.StaticBox(self.panel, wx.ID_ANY,'Gerber', pos=(20,250), size=(390,350))
-        wx.StaticBox(self.panel, wx.ID_ANY,'Other', pos=(20,600), size=(390,50))
-        wx.StaticBox(self.panel, wx.ID_ANY,'Drill', pos=(420,250), size=(220,350))
+        wx.StaticBox(self.panel, wx.ID_ANY,'Gerber', pos=(20,250), size=(410,350))
+        wx.StaticBox(self.panel, wx.ID_ANY,'Other', pos=(20,600), size=(410,50))
+        wx.StaticBox(self.panel, wx.ID_ANY,'Drill', pos=(440,250), size=(220,350))
         wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=(20,660))
-#        status=wx.StaticBox(self.panel, wx.ID_ANY, 'Ready', pos=(0,190), size=(300,20))
         self.layer = wx.grid.Grid(self.panel, wx.ID_ANY, size=(180,240), pos=(40,270))
+#        self.layer.DisableDragGridSize()
+        self.layer.DisableDragColSize()
+        self.layer.DisableDragRowSize()
         self.layer.CreateGrid(len(layer_list), 2)
         self.layer.SetColLabelValue(0, 'Layer')
         self.layer.SetColLabelValue(1, 'Filename')
@@ -216,10 +218,12 @@ class Editor():
         self.opt_CoodinateFormat46 = wx.CheckBox(self.panel, wx.ID_ANY, 'CoodinateFormat46', pos=(230, 545))
         self.opt_IncludeNetlistInfo = wx.CheckBox(self.panel, wx.ID_ANY, 'IncludeNetlistInfo', pos=(230, 570))
 
-        self.drill = wx.grid.Grid(self.panel, wx.ID_ANY, size=(162,130), pos=(440,270))
+        self.drill = wx.grid.Grid(self.panel, wx.ID_ANY, size=(180,130), pos=(460,270))
+        self.drill.DisableDragColSize()
+        self.drill.DisableDragRowSize()
         self.drill.CreateGrid(5, 2)
         self.drill.SetColSize(0, 80)
-        self.drill.SetColSize(1, 80)
+        self.drill.SetColSize(1, 100)
         self.drill.DisableDragGridSize()
         self.drill.ShowScrollbars(wx.SHOW_SB_NEVER,wx.SHOW_SB_NEVER)
         self.drill.SetColLabelValue(0, 'Drill')
@@ -229,16 +233,16 @@ class Editor():
         for i in range(len(drillfile)):
             self.drill.SetCellValue(i, 0, drillfile[i])
             self.drill.SetReadOnly(i, 0, True)
-        wx.StaticText(self.panel, wx.ID_ANY, 'Drill Unit :', pos=(440,410))
-        self.opt_DrillUnit = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('inch','mm'), style=wx.CB_READONLY, pos=(510,410), size=(110,25))
-        self.opt_MirrorYAxis = wx.CheckBox(self.panel, wx.ID_ANY, 'MirrorYAxis', pos=(440,435))
-        self.opt_MinimalHeader = wx.CheckBox(self.panel, wx.ID_ANY, 'MinimalHeader', pos=(440,460))
-        self.opt_MergePTHandNPTH = wx.CheckBox(self.panel, wx.ID_ANY, 'MergePTHandNPTH', pos=(440,485))
-        self.opt_RouteModeForOvalHoles = wx.CheckBox(self.panel, wx.ID_ANY, 'RouteModeForOvalHoles', pos=(440,510))
-        wx.StaticText(self.panel, wx.ID_ANY, 'Zeros :', pos=(440,535))
-        self.opt_ZerosFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('DecimalFormat','SuppressLeading','SuppresTrailing', 'KeepZeros'), pos=(490,535), size=(130,25), style=wx.CB_READONLY)
-        wx.StaticText(self.panel, wx.ID_ANY, 'MapFileFormat :', pos=(440,560))
-        self.opt_MapFileFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('HPGL','PostScript','Gerber','DXF','SVG','PDF'), pos=(540,560), size=(80,25), style=wx.CB_READONLY)
+        wx.StaticText(self.panel, wx.ID_ANY, 'Drill Unit :', pos=(460,410))
+        self.opt_DrillUnit = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('inch','mm'), style=wx.CB_READONLY, pos=(530,410), size=(110,25))
+        self.opt_MirrorYAxis = wx.CheckBox(self.panel, wx.ID_ANY, 'MirrorYAxis', pos=(460,435))
+        self.opt_MinimalHeader = wx.CheckBox(self.panel, wx.ID_ANY, 'MinimalHeader', pos=(460,460))
+        self.opt_MergePTHandNPTH = wx.CheckBox(self.panel, wx.ID_ANY, 'MergePTHandNPTH', pos=(460,485))
+        self.opt_RouteModeForOvalHoles = wx.CheckBox(self.panel, wx.ID_ANY, 'RouteModeForOvalHoles', pos=(460,510))
+        wx.StaticText(self.panel, wx.ID_ANY, 'Zeros :', pos=(460,535))
+        self.opt_ZerosFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('DecimalFormat','SuppressLeading','SuppresTrailing', 'KeepZeros'), pos=(510,535), size=(130,25), style=wx.CB_READONLY)
+        wx.StaticText(self.panel, wx.ID_ANY, 'MapFileFormat :', pos=(460,560))
+        self.opt_MapFileFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('HPGL','PostScript','Gerber','DXF','SVG','PDF'), pos=(560,560), size=(80,25), style=wx.CB_READONLY)
 
         self.opt_InstructionLabel = wx.StaticText(self.panel, wx.ID_ANY, 'InstructionFile:', pos=(40,620))
         self.opt_InstructionFile = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(120,25), pos=(40 + 5 + self.opt_InstructionLabel.GetSize().GetWidth(),620))
@@ -359,7 +363,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     except Exception as err:
                         alert('JSON error \n\n File : %s\n%s' % (os.path.basename(fname), err.message))
                 self.json_data = sorted(self.json_data, key=lambda x: x['Name'])
-                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper', size=(670,270))
+                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper', size=(680,270))
                 self.panel = wx.Panel(self)
                 icon=wx.EmptyIcon()
                 icon_source=wx.Image(self.icon_file_name,wx.BITMAP_TYPE_PNG)
@@ -369,23 +373,23 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 for item in self.json_data:
                     manufacturers_arr.append(item['Name'])
 
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), size=(450,25), pos=(20,20))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), size=(500,25), pos=(20,20))
                 wx.StaticText(self.panel, wx.ID_ANY, 'Manufacturers :',size=(120,25), pos=(20,50))
-                self.manufacturers = wx.ComboBox(self.panel, wx.ID_ANY, 'Select Manufacturers', size=(270,25), pos=(150,50), choices=manufacturers_arr, style=wx.CB_READONLY)
+                self.manufacturers = wx.ComboBox(self.panel, wx.ID_ANY, 'Select Manufacturers', size=(300,25), pos=(150,50), choices=manufacturers_arr, style=wx.CB_READONLY)
                 wx.StaticText(self.panel, wx.ID_ANY, 'URL :',size=(120,25), pos=(20,80))
-                self.url = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(270,25), pos=(150,80), style=wx.TE_READONLY)
+                self.url = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(300,25), pos=(150,80), style=wx.TE_READONLY)
                 wx.StaticText(self.panel, wx.ID_ANY, 'Gerber Dir :',size=(120,25), pos=(20,110))
-                self.gerberdir = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=(270,25), pos=(150,110))
+                self.gerberdir = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=(300,25), pos=(150,110))
                 wx.StaticText(self.panel, wx.ID_ANY, 'Zip Filename :',size=(120,25), pos=(20,140))
-                self.zipfilename = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=(270,25), pos=(150,140))
+                self.zipfilename = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=(300,25), pos=(150,140))
                 wx.StaticText(self.panel, wx.ID_ANY, 'Description :',size=(120,25), pos=(20,170))
-                self.label = wx.StaticText(self.panel, wx.ID_ANY, '',size=(450,25), pos=(150,170))
-                wx.StaticLine(self.panel, wx.ID_ANY, size=(320,2), pos=(20,450))
+                self.label = wx.StaticText(self.panel, wx.ID_ANY, '',size=(500,25), pos=(150,170))
 
                 self.manufacturers.SetSelection(0)
                 self.detailbtn = wx.ToggleButton(self.panel, wx.ID_ANY, getstr('DETAIL'),size=(150,25),pos=(20,200))
-                self.execbtn = wx.Button(self.panel, wx.ID_ANY, getstr('EXEC'),size=(150,25),pos=(200,200))
-                self.clsbtn = wx.Button(self.panel, wx.ID_ANY, getstr('CLOSE'),size=(150,25),pos=(360,200))
+                self.execbtn = wx.Button(self.panel, wx.ID_ANY, getstr('EXEC'),size=(200,25),pos=(200,200))
+                self.clsbtn = wx.Button(self.panel, wx.ID_ANY, getstr('CLOSE'),size=(150,25),pos=(410,200))
+                wx.StaticLine(self.panel, wx.ID_ANY, size=(640,2), pos=(20,245))
                 self.manufacturers.Bind(wx.EVT_COMBOBOX, self.OnManufacturers)
                 self.clsbtn.Bind(wx.EVT_BUTTON, self.OnClose)
                 self.execbtn.Bind(wx.EVT_BUTTON, self.OnExec)
@@ -397,7 +401,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
             def Select(self,n):
                 self.settings = self.json_data[n]
                 self.label.SetLabel(self.settings.get('Description', ''))
-                self.url.SetLabel(self.settings.get('URL',''))
+                self.url.SetValue(self.settings.get('URL','---'))
                 self.gerberdir.SetValue(self.settings.get('GerberDir','Gerber'))
                 self.zipfilename.SetValue(self.settings.get('ZipFilename','*.ZIP'))
                 self.editor.Set(self.settings)
@@ -409,9 +413,9 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
 
             def OnDetail(self,e):
                 if self.detailbtn.GetValue():
-                    self.SetSize(wx.Size(670,730))
+                    self.SetSize(wx.Size(680,730))
                 else:
-                    self.SetSize(wx.Size(670,270))
+                    self.SetSize(wx.Size(680,270))
                 e.Skip()
 
             def OnClose(self,e):
