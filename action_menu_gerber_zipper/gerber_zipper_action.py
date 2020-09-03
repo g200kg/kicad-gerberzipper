@@ -191,7 +191,7 @@ class Editor():
         wx.StaticBox(self.panel, wx.ID_ANY,'Other', pos=(20,600), size=(410,50))
         wx.StaticBox(self.panel, wx.ID_ANY,'Drill', pos=(440,250), size=(220,350))
         wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=(20,660))
-        self.layer = wx.grid.Grid(self.panel, wx.ID_ANY, size=(180,240), pos=(40,270))
+        self.layer = wx.grid.Grid(self.panel, wx.ID_ANY, size=(180,320), pos=(40,270))
 #        self.layer.DisableDragGridSize()
         self.layer.DisableDragColSize()
         self.layer.DisableDragRowSize()
