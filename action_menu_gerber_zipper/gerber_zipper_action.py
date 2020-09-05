@@ -22,7 +22,6 @@ gerber_subdir = "Gerber"
 merge_npth = False
 use_aux_origin = True
 zip_fname = ""
-instruction_fname = ""
 
 strtab = {
     'default':{
@@ -30,6 +29,7 @@ strtab = {
         'MENUFACTURERS':'Manufacturers',
         'URL':'URL',
         'GERBERDIR':'Gerber Dir',
+        'ZIPFNAME':'Zip Filename',
         'DESCRIPTION':'Description',
         'EXEC':'Make Gerber and ZIP',
         'DETAIL':'Show Settings Details',
@@ -42,6 +42,7 @@ strtab = {
         'MENUFACTURERS':u'基板メーカー',
         'URL':'URL',
         'GERBERDIR':u'ガーバーディレクトリ',
+        'ZIPFNAME':u'Zip ファイル名',
         'DESCRIPTION':u'説明',
         'EXEC':u'ガーバーとZIPファイルの作成',
         'DETAIL':u'設定の詳細を表示',
@@ -52,31 +53,31 @@ strtab = {
 }
 
 layer_list = [
-    {'name':'F.Cu', 'id':pcbnew.F_Cu},
-    {'name':'B.Cu', 'id':pcbnew.B_Cu},
-    {'name':'F.Adhes', 'id':pcbnew.F_Adhes},
-    {'name':'B.Adhes', 'id':pcbnew.B_Adhes},
-    {'name':'F.Paste', 'id':pcbnew.F_Paste},
-    {'name':'B.Paste', 'id':pcbnew.B_Paste},
-    {'name':'F.SilkS', 'id':pcbnew.F_SilkS},
-    {'name':'B.SilkS', 'id':pcbnew.B_SilkS},
-    {'name':'F.Mask', 'id':pcbnew.F_Mask},
-    {'name':'B.Mask', 'id':pcbnew.B_Mask},
-    {'name':'Dwgs.User', 'id':pcbnew.Dwgs_User},
-    {'name':'Cmts.User', 'id':pcbnew.Cmts_User},
-    {'name':'Eco1.User', 'id':pcbnew.Eco1_User},
-    {'name':'Eco2.User', 'id':pcbnew.Eco2_User},
-    {'name':'Edge.Cuts', 'id':pcbnew.Edge_Cuts},
-    {'name':'F.CrtYd', 'id':pcbnew.F_CrtYd},
-    {'name':'B.CrtYd', 'id':pcbnew.B_CrtYd},
-    {'name':'F.Fab', 'id':pcbnew.F_Fab},
-    {'name':'B.Fab', 'id':pcbnew.B_Fab},
-    {'name':'In1.Cu', 'id':pcbnew.In1_Cu},
-    {'name':'In2.Cu', 'id':pcbnew.In2_Cu},
-    {'name':'In3.Cu', 'id':pcbnew.In3_Cu},
-    {'name':'In4.Cu', 'id':pcbnew.In4_Cu},
-    {'name':'In5.Cu', 'id':pcbnew.In5_Cu},
-    {'name':'In6.Cu', 'id':pcbnew.In6_Cu}
+    {'name':'F.Cu', 'id':pcbnew.F_Cu, 'fnamekey':'${filename(F.Cu)}'},
+    {'name':'B.Cu', 'id':pcbnew.B_Cu, 'fnamekey':'${filename(B.Cu)}'},
+    {'name':'F.Adhes', 'id':pcbnew.F_Adhes, 'fnamekey':'${filename(F.Adhes)}'},
+    {'name':'B.Adhes', 'id':pcbnew.B_Adhes, 'fnamekey':'${filename(B.Adhes)}'},
+    {'name':'F.Paste', 'id':pcbnew.F_Paste, 'fnamekey':'${filename(F.Paste)}'},
+    {'name':'B.Paste', 'id':pcbnew.B_Paste, 'fnamekey':'${filename(B.Paste)}'},
+    {'name':'F.SilkS', 'id':pcbnew.F_SilkS, 'fnamekey':'${filename(F.SilkS)}'},
+    {'name':'B.SilkS', 'id':pcbnew.B_SilkS, 'fnamekey':'${filename(B.SilkS)}'},
+    {'name':'F.Mask', 'id':pcbnew.F_Mask, 'fnamekey':'${filename(F.Mask)}'},
+    {'name':'B.Mask', 'id':pcbnew.B_Mask, 'fnamekey':'${filename(B.Mask)}'},
+    {'name':'Dwgs.User', 'id':pcbnew.Dwgs_User, 'fnamekey':'${filename(Dwgs.User)}'},
+    {'name':'Cmts.User', 'id':pcbnew.Cmts_User, 'fnamekey':'${filename(Cmts.User)}'},
+    {'name':'Eco1.User', 'id':pcbnew.Eco1_User, 'fnamekey':'${filename(Eco1.User)}'},
+    {'name':'Eco2.User', 'id':pcbnew.Eco2_User, 'fnamekey':'${filename(Eco2.User)}'},
+    {'name':'Edge.Cuts', 'id':pcbnew.Edge_Cuts, 'fnamekey':'${filename(Edge.Cuts)}'},
+    {'name':'F.CrtYd', 'id':pcbnew.F_CrtYd, 'fnamekey':'${filename(F.CrtYd)}'},
+    {'name':'B.CrtYd', 'id':pcbnew.B_CrtYd, 'fnamekey':'${filename(B.CrtYd)}'},
+    {'name':'F.Fab', 'id':pcbnew.F_Fab, 'fnamekey':'${filename(F.Fab)}'},
+    {'name':'B.Fab', 'id':pcbnew.B_Fab, 'fnamekey':'${filename(B.Fab)}'},
+    {'name':'In1.Cu', 'id':pcbnew.In1_Cu, 'fnamekey':'${filename(In1.Cu)}'},
+    {'name':'In2.Cu', 'id':pcbnew.In2_Cu, 'fnamekey':'${filename(In2.Cu)}'},
+    {'name':'In3.Cu', 'id':pcbnew.In3_Cu, 'fnamekey':'${filename(In3.Cu)}'},
+    {'name':'In4.Cu', 'id':pcbnew.In4_Cu, 'fnamekey':'${filename(In4.Cu)}'},
+    {'name':'In5.Cu', 'id':pcbnew.In5_Cu, 'fnamekey':'${filename(In5.Cu)}'},
+    {'name':'In6.Cu', 'id':pcbnew.In6_Cu, 'fnamekey':'${filename(In6.Cu)}'}
 ]
 
 default_settings = {
@@ -143,7 +144,7 @@ default_settings = {
     "SVG":False,
     "PDF":False
   },
-  "InstructionFile":""
+  "OptionalFiles":[]
 }
 
 def message(s):
@@ -152,6 +153,12 @@ def message(s):
 
 def alert(s):
     wx.MessageBox(s, 'Gerber Zipper', wx.OK|wx.ICON_EXCLAMATION)
+
+def getindex(s):
+    for i in range(len(layer_list)):
+        if layer_list[i]['name']==s:
+            return i
+    return -1
 
 def getid(s):
     for i in range(len(layer_list)):
@@ -188,7 +195,7 @@ class Editor():
         self.panel = panel
         wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), pos=(1020,40))
         wx.StaticBox(self.panel, wx.ID_ANY,'Gerber', pos=(20,250), size=(410,350))
-        wx.StaticBox(self.panel, wx.ID_ANY,'Other', pos=(20,600), size=(410,50))
+        wx.StaticBox(self.panel, wx.ID_ANY,'Other', pos=(20,600), size=(640,55))
         wx.StaticBox(self.panel, wx.ID_ANY,'Drill', pos=(440,250), size=(220,350))
         wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=(20,660))
         self.layer = wx.grid.Grid(self.panel, wx.ID_ANY, size=(180,320), pos=(40,270))
@@ -212,7 +219,7 @@ class Editor():
         self.opt_DoNotTentVias = wx.CheckBox(self.panel, wx.ID_ANY, 'DoNotTentVias', pos=(230,420))
         self.opt_UseAuxOrigin = wx.CheckBox(self.panel, wx.ID_ANY, 'UseAuxOrigin', pos=(230,445))
         self.opt_LineWidthLabel = wx.StaticText(self.panel, wx.ID_ANY, 'LineWidth(mm):', pos=(230,470))
-        self.opt_LineWidth = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(50,25), pos=(230 + 5 + self.opt_LineWidthLabel.GetSize().GetWidth(),470))
+        self.opt_LineWidth = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(50,25), pos=(230 + 5 + self.opt_LineWidthLabel.GetSize().GetWidth(),470-4))
         self.opt_SubtractMaskFromSilk = wx.CheckBox(self.panel, wx.ID_ANY, 'SubtractMaskFromSilk', pos=(230, 495))
         self.opt_UseExtendedX2format = wx.CheckBox(self.panel, wx.ID_ANY, 'UseExtendedX2format', pos=(230, 520))
         self.opt_CoodinateFormat46 = wx.CheckBox(self.panel, wx.ID_ANY, 'CoodinateFormat46', pos=(230, 545))
@@ -234,18 +241,19 @@ class Editor():
             self.drill.SetCellValue(i, 0, drillfile[i])
             self.drill.SetReadOnly(i, 0, True)
         wx.StaticText(self.panel, wx.ID_ANY, 'Drill Unit :', pos=(460,410))
-        self.opt_DrillUnit = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('inch','mm'), style=wx.CB_READONLY, pos=(530,410), size=(110,25))
+        self.opt_DrillUnit = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('inch','mm'), style=wx.CB_READONLY, pos=(530,410-4), size=(110,25))
         self.opt_MirrorYAxis = wx.CheckBox(self.panel, wx.ID_ANY, 'MirrorYAxis', pos=(460,435))
         self.opt_MinimalHeader = wx.CheckBox(self.panel, wx.ID_ANY, 'MinimalHeader', pos=(460,460))
         self.opt_MergePTHandNPTH = wx.CheckBox(self.panel, wx.ID_ANY, 'MergePTHandNPTH', pos=(460,485))
         self.opt_RouteModeForOvalHoles = wx.CheckBox(self.panel, wx.ID_ANY, 'RouteModeForOvalHoles', pos=(460,510))
         wx.StaticText(self.panel, wx.ID_ANY, 'Zeros :', pos=(460,535))
-        self.opt_ZerosFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('DecimalFormat','SuppressLeading','SuppresTrailing', 'KeepZeros'), pos=(510,535), size=(130,25), style=wx.CB_READONLY)
+        self.opt_ZerosFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('DecimalFormat','SuppressLeading','SuppresTrailing', 'KeepZeros'), pos=(510,535-4), size=(130,25), style=wx.CB_READONLY)
         wx.StaticText(self.panel, wx.ID_ANY, 'MapFileFormat :', pos=(460,560))
-        self.opt_MapFileFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('HPGL','PostScript','Gerber','DXF','SVG','PDF'), pos=(560,560), size=(80,25), style=wx.CB_READONLY)
+        self.opt_MapFileFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('HPGL','PostScript','Gerber','DXF','SVG','PDF'), pos=(560,560-4), size=(80,25), style=wx.CB_READONLY)
 
-        self.opt_InstructionLabel = wx.StaticText(self.panel, wx.ID_ANY, 'InstructionFile:', pos=(40,620))
-        self.opt_InstructionFile = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(120,25), pos=(40 + 5 + self.opt_InstructionLabel.GetSize().GetWidth(),620))
+        self.opt_OptionalLabel = wx.StaticText(self.panel, wx.ID_ANY, 'OptionalFile:', pos=(40,625))
+        self.opt_OptionalFile = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(120,25), pos=(40 + 5 + self.opt_OptionalLabel.GetSize().GetWidth(),625-4))
+        self.opt_OptionalContent = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(380,25), pos=(140 + 40 + 5 + self.opt_OptionalLabel.GetSize().GetWidth(),625-4))
 
     def Set(self, settings):
         self.settings=dict(default_settings,**settings)
@@ -293,7 +301,11 @@ class Editor():
             if(map[k]):
                 i = {'HPGL':0,'PostScript':1,'Gerber':2,'DXF':3,'SVG':4,'PDF':5}.get(k,2)
         self.opt_MapFileFormat.SetSelection(i)
-        self.opt_InstructionFile.SetValue(self.settings.get('InstructionFile', ''))
+        files=self.settings.get('OptionalFiles',[])
+        if len(files)==0:
+            files=[{'name':'','content':''}]
+        self.opt_OptionalFile.SetValue(files[0]['name'])
+        self.opt_OptionalContent.SetValue(files[0]['content'])
 
     def Get(self):
         l = self.settings.get('Layers',{})
@@ -340,7 +352,8 @@ class Editor():
         map['DXF'] = i == 3
         map['SVG'] = i == 4
         map['PDF'] = i == 5
-        self.settings['InstructionFile'] = self.opt_InstructionFile.GetValue()
+        f = {'name':self.opt_OptionalFile.GetValue(), 'content':self.opt_OptionalContent.GetValue()}
+        self.settings['OptionalFiles'] = [f]
         return self.settings
 
 class GerberZipperAction( pcbnew.ActionPlugin ):
@@ -365,24 +378,24 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.json_data = sorted(self.json_data, key=lambda x: x['Name'])
                 wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper', size=(680,270))
                 self.panel = wx.Panel(self)
-                icon=wx.EmptyIcon()
-                icon_source=wx.Image(self.icon_file_name,wx.BITMAP_TYPE_PNG)
-                icon.CopyFromBitmap(icon_source.ConvertToBitmap())
+                icon=wx.Icon(self.icon_file_name)
+#                icon_source=wx.Image(self.icon_file_name,wx.BITMAP_TYPE_PNG)
+#                icon.CopyFromBitmap(icon_source.ConvertToBitmap())
                 self.SetIcon(icon)
                 manufacturers_arr=[]
                 for item in self.json_data:
                     manufacturers_arr.append(item['Name'])
 
                 wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), size=(500,25), pos=(20,20))
-                wx.StaticText(self.panel, wx.ID_ANY, 'Manufacturers :',size=(120,25), pos=(20,50))
-                self.manufacturers = wx.ComboBox(self.panel, wx.ID_ANY, 'Select Manufacturers', size=(300,25), pos=(150,50), choices=manufacturers_arr, style=wx.CB_READONLY)
-                wx.StaticText(self.panel, wx.ID_ANY, 'URL :',size=(120,25), pos=(20,80))
-                self.url = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(300,25), pos=(150,80), style=wx.TE_READONLY)
-                wx.StaticText(self.panel, wx.ID_ANY, 'Gerber Dir :',size=(120,25), pos=(20,110))
-                self.gerberdir = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=(300,25), pos=(150,110))
-                wx.StaticText(self.panel, wx.ID_ANY, 'Zip Filename :',size=(120,25), pos=(20,140))
-                self.zipfilename = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=(300,25), pos=(150,140))
-                wx.StaticText(self.panel, wx.ID_ANY, 'Description :',size=(120,25), pos=(20,170))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('MENUFACTURERS'),size=(120,25), pos=(20,50))
+                self.manufacturers = wx.ComboBox(self.panel, wx.ID_ANY, 'Select Manufacturers', size=(300,25), pos=(150,50-4), choices=manufacturers_arr, style=wx.CB_READONLY)
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('URL'),size=(120,25), pos=(20,80))
+                self.url = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=(300,25), pos=(150,80-4), style=wx.TE_READONLY)
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('GERBERDIR'),size=(120,25), pos=(20,110))
+                self.gerberdir = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=(300,25), pos=(150,110-4))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('ZIPFNAME'),size=(120,25), pos=(20,140))
+                self.zipfilename = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=(300,25), pos=(150,140-4))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESCRIPTION'),size=(120,25), pos=(20,170))
                 self.label = wx.StaticText(self.panel, wx.ID_ANY, '',size=(500,25), pos=(150,170))
 
                 self.manufacturers.SetSelection(0)
@@ -437,9 +450,6 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     board_basename = (os.path.splitext(os.path.basename(board_fname)))[0]
                     gerber_dir = '%s/%s' % (board_dir, self.gerberdir.GetValue())
                     zip_fname = '%s/%s' % (gerber_dir, self.zipfilename.GetValue().replace('*',board_basename))
-                    instruction_fname = self.settings.get('InstructionFile')
-                    if len(instruction_fname)>0:
-                        instruction_fname = '%s/%s' % (gerber_dir, instruction_fname)
                     if not os.path.exists(gerber_dir):
                         os.mkdir(gerber_dir)
                     refill(board)
@@ -474,6 +484,8 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     po.SetDrillMarksType(0)
                     layer = self.settings.get('Layers',{})
                     forcedel(zip_fname)
+                    for i in range(len(layer_list)):
+                        layer_list[i]['fname'] = ''
                     for i in layer:
                         fnam = layer[i]
                         id = getid(i)
@@ -485,6 +497,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                             targetname = '%s/%s' % (gerber_dir, fnam.replace('*',board_basename))
                             forcedel(targetname)
                             forceren(pc.GetPlotFileName(), targetname)
+                            layer_list[getindex(i)]['fname'] = targetname
                             zipfiles.append(targetname)
                     message('Drill')
                 # DRILL
@@ -578,53 +591,25 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     if drill_report_fname:
                         ew.GenDrillReportFile(drill_report_fname)
                         zipfiles.append(drill_report_fname)
-                # InstructionFile
-                    message('Instruction')
-                    if instruction_fname:
-                        with codecs.open(instruction_fname, 'w', 'utf-8') as f:
-                            for k in layer:
-                                fnam = layer[k]
-                                id = getid(k)
-                                if len(fnam)>0 and board.IsLayerEnabled(id):
-                                    fnam = fnam.replace('*',board_basename)
-                                    f.write(fnam)
-                                    if id==pcbnew.F_Cu:
-                                        f.write(u' (部品面パターン)\n')
-                                    elif id==pcbnew.B_Cu:
-                                        f.write(u' (半田面パターン)\n')
-                                    elif id==pcbnew.F_SilkS:
-                                        f.write(u' (部品面シルク)\n')
-                                    elif id==pcbnew.B_SilkS:
-                                        f.write(u' (半田面シルク)\n')
-                                    elif id==pcbnew.F_Mask:
-                                        f.write(u' (部品面レジスト)\n')
-                                    elif id==pcbnew.B_Mask:
-                                        f.write(u' (半田面レジスト)\n')
-                                    elif id==pcbnew.In1_Cu:
-                                        f.write(u' (内層パターン 2)\n')
-                                    elif id==pcbnew.In2_Cu:
-                                        f.write(u' (内層パターン 3)\n')
-                                    elif id==pcbnew.In3_Cu:
-                                        f.write(u' (内層パターン 4)\n')
-                                    elif id==pcbnew.In4_Cu:
-                                        f.write(u' (内層パターン 5)\n')
-                                    elif id==pcbnew.In5_Cu:
-                                        f.write(u' (内層パターン 6)\n')
-                                    elif id==pcbnew.In6_Cu:
-                                        f.write(u' (内層パターン 7)\n')
-                                    elif id==pcbnew.Edge_Cuts:
-                                        f.write(u' (基板外形)\n')
-                            if drill_fname:
-                                f.write(u'\x0D\x0A')
-                                f.write(os.path.basename(drill_fname))
-                                f.write(u' (ドリルデータ)\n')
-                            if drill_map_fname:
-                                f.write(os.path.basename(drill_map_fname))
-                                f.write(u' (ドリルマップ)\n')
-                            if drill_report_fname:
-                                f.write(os.path.basename(drill_report_fname))
-                                f.write(u' (ドリルリスト)\n')
-                        zipfiles.append(instruction_fname)
+
+                # OptionalFile
+                    message('optional')
+                    files = self.settings.get('OptionalFiles',[])
+                    for n in range(len(files)):
+                        if(len(files[n]['name'])):
+                            optional_fname = '%s/%s' % (gerber_dir, files[n]['name'])
+                            optional_content = files[n]['content']
+                            optional_content = optional_content.replace('${basename}',board_basename)
+                            for i in range(len(layer_list)):
+                                kpath = '${filepath('+layer_list[i]['name']+')}'
+                                kname = '${filename('+layer_list[i]['name']+')}'
+                                path = layer_list[i]['fname']
+                                name = os.path.basename(path)
+                                optional_content = optional_content.replace(kname,name)
+                            if optional_fname:
+                                with codecs.open(optional_fname, 'w', 'utf-8') as f:
+                                    f.write(optional_content)
+                            zipfiles.append(optional_fname)
 
                 # ZIP
                     message('Zip')

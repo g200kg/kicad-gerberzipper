@@ -62,5 +62,5 @@
     "SVG":false,
     "PDF":false
   },
-  "InstructionFile":""
+  "OptionalFiles":[]
 }
