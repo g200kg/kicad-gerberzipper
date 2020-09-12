@@ -17,11 +17,9 @@ import json
 import sys
 import codecs
 import inspect
+import traceback
 
-gerber_subdir = "Gerber"
-merge_npth = False
-use_aux_origin = True
-zip_fname = ""
+version = "1.0.1"
 
 strtab = {
     'default':{
@@ -44,7 +42,7 @@ strtab = {
         'GERBERDIR':u'ガーバーディレクトリ',
         'ZIPFNAME':u'Zip ファイル名',
         'DESCRIPTION':u'説明',
-        'EXEC':u'ガーバーとZIPファイルの作成',
+        'EXEC':u'ガーバー/ZIPファイル作成',
         'DETAIL':u'設定の詳細を表示',
         'CLOSE':u'閉じる',
         'DESC2':u'ここでの変更は一時的なものです。恒久的に変更したい場合は対応するjsonファイルを編集してください。',
@@ -148,11 +146,10 @@ default_settings = {
 }
 
 def message(s):
-    s
-#    alert(s)
+    print('GerberZipper: '+s)
 
-def alert(s):
-    wx.MessageBox(s, 'Gerber Zipper', wx.OK|wx.ICON_EXCLAMATION)
+def alert(s, icon):
+    wx.MessageBox(s, 'Gerber Zipper', wx.OK|icon)
 
 def getindex(s):
     for i in range(len(layer_list)):
@@ -186,20 +183,18 @@ def forceren(src, dst):
         os.rename(src, dst)
 
 def refill(board):
-    filler = pcbnew.ZONE_FILLER(board)
+    filler = pcbnew.ZONE_FILLER(board, None)
     zones = board.Zones()
     filler.Fill(zones)
 
 class Editor():
     def __init__(self, panel):
         self.panel = panel
-        wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), pos=(1020,40))
         wx.StaticBox(self.panel, wx.ID_ANY,'Gerber', pos=(20,250), size=(410,350))
         wx.StaticBox(self.panel, wx.ID_ANY,'Other', pos=(20,600), size=(640,55))
         wx.StaticBox(self.panel, wx.ID_ANY,'Drill', pos=(440,250), size=(220,350))
         wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=(20,660))
         self.layer = wx.grid.Grid(self.panel, wx.ID_ANY, size=(180,320), pos=(40,270))
-#        self.layer.DisableDragGridSize()
         self.layer.DisableDragColSize()
         self.layer.DisableDragRowSize()
         self.layer.CreateGrid(len(layer_list), 2)
@@ -361,6 +356,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
         self.name = "Gerber Zipper"
         self.category = "Plot"
         self.description = "Make Gerber-Zip-file for selected PCB manufacturers"
+        self.show_toolbar_button = True
         self.icon_file_name = os.path.join(os.path.dirname(__file__), 'icon.png')
 
     def Run(self):
@@ -374,19 +370,17 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     try:
                         self.json_data.append(json.load(open(fname)))
                     except Exception as err:
-                        alert('JSON error \n\n File : %s\n%s' % (os.path.basename(fname), err.message))
+                        alert('JSON error \n\n File : %s\n%s' % (os.path.basename(fname), err.message), wx.ICON_WARNING)
                 self.json_data = sorted(self.json_data, key=lambda x: x['Name'])
-                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper', size=(680,270))
+                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=(680,270))
                 self.panel = wx.Panel(self)
                 icon=wx.Icon(self.icon_file_name)
-#                icon_source=wx.Image(self.icon_file_name,wx.BITMAP_TYPE_PNG)
-#                icon.CopyFromBitmap(icon_source.ConvertToBitmap())
                 self.SetIcon(icon)
                 manufacturers_arr=[]
                 for item in self.json_data:
                     manufacturers_arr.append(item['Name'])
 
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), size=(500,25), pos=(20,20))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), size=(600,25), pos=(20,20))
                 wx.StaticText(self.panel, wx.ID_ANY, getstr('MENUFACTURERS'),size=(120,25), pos=(20,50))
                 self.manufacturers = wx.ComboBox(self.panel, wx.ID_ANY, 'Select Manufacturers', size=(300,25), pos=(150,50-4), choices=manufacturers_arr, style=wx.CB_READONLY)
                 wx.StaticText(self.panel, wx.ID_ANY, getstr('URL'),size=(120,25), pos=(20,80))
@@ -435,11 +429,6 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 e.Skip()
                 self.Close()
 
-            def OnDump(self,e):
-                s = json.dumps(self.editor.Get())
-                wx.MessageBox(s, 'Gerber Zipper', wx.OK|wx.ICON_INFORMATION)
-                e.Skip()
-
             def OnExec(self,e):
                 try:
                     self.settings = self.editor.Get()
@@ -459,22 +448,19 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     pc = pcbnew.PLOT_CONTROLLER(board)
                     po = pc.GetPlotOptions()
 
-#                    s = {}
-#                    for k in inspect.getmembers(po, inspect.ismethod):
-#                        s[k[0]]='method'
-                    s = self.settings
-                    message(json.dumps(s,sort_keys=True,indent=4))
-
                     po.SetOutputDirectory(gerber_dir)
                     po.SetPlotFrameRef( self.settings.get('PlotBorderAndTitle',False))
                     po.SetPlotValue( self.settings.get('PlotFootprintValues',True))
                     po.SetPlotReference( self.settings.get('PlotFootprintReferences',True))
                     po.SetPlotInvisibleText( self.settings.get('ForcePlotInvisible',False))
                     po.SetExcludeEdgeLayer( self.settings.get('ExcludeEdgeLayer',True))
-                    po.SetPlotPadsOnSilkLayer( not self.settings.get('ExcludePadsFromSilk',False))
+                    if hasattr(po,'SetPlotPadsOnSilkLayer'):
+                        po.SetPlotPadsOnSilkLayer( not self.settings.get('ExcludePadsFromSilk',False))
                     po.SetPlotViaOnMaskLayer( self.settings.get('DoNotTentVias',False))
-                    po.SetUseAuxOrigin(self.settings.get('UseAuxOrigin',False))
-                    po.SetLineWidth(FromMM(float(self.settings.get('LineWidth'))))
+                    if hasattr(po,'SetUseAuxOrigin'):
+                        po.SetUseAuxOrigin(self.settings.get('UseAuxOrigin',False))
+                    if hasattr(po,'SetLineWidth'):
+                        po.SetLineWidth(FromMM(float(self.settings.get('LineWidth'))))
                     po.SetSubtractMaskFromSilk(self.settings.get('SubtractMaskFromSilk',True))
                     po.SetUseGerberX2format(self.settings.get('UseExtendedX2format',False))
                     po.SetIncludeGerberNetlistInfo(self.settings.get('IncludeNetlistInfo',False))
@@ -540,7 +526,11 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     ew.SetFormat(self.settings.get('DrillUnitMM',True), excellon_format, 3, 3)
                     offset = wxPoint(0,0)
                     if self.settings.get('UseAuxOrigin',False):
-                        offset = board.GetAuxOrigin()
+                        if hasattr(board, 'GetAuxOrigin'):
+                            offset = board.GetAuxOrigin()
+                        else:
+                            bds = board.GetDesignSettings()
+                            offset = bds.m_AuxOrigin
                     ew.SetOptions(self.settings.get('MirrorYAxis',False), self.settings.get('MinimalHeader',False), offset, self.settings.get('MergePTHandNPTH',False))
                     ew.SetRouteModeForOvalHoles(self.settings.get('RouteModeForOvalHoles'))
                     map_format = pcbnew.PLOT_FORMAT_GERBER
@@ -618,9 +608,11 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                             fnam = zipfiles[i]
                             if os.path.exists(fnam):
                                 f.write(fnam, os.path.basename(fnam))
-                    wx.MessageBox(getstr('COMPLETE') % zip_fname, 'Gerber Zipper', wx.OK|wx.ICON_INFORMATION)
-                except Exception as err:
-                    alert(err.message)
+                    alert(getstr('COMPLETE') % zip_fname, wx.ICON_INFORMATION)
+                except Exception:
+                    s=traceback.format_exc(chain=False)
+                    print(s)
+                    alert(s, wx.ICON_ERROR)
                 e.Skip()
         dialog = Dialog(None)
         dialog.Center()
