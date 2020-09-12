@@ -48,6 +48,19 @@ strtab = {
         'DESC2':u'ここでの変更は一時的なものです。恒久的に変更したい場合は対応するjsonファイルを編集してください。',
         'COMPLETE':u'GerberZipper 完了。 \n\n 出力ファイル : %s'
     },
+    'pt_BR':{
+        'LABEL':'Cria arquivos GERBERs, zipando-os para fabricantes de PCB.',
+        'MENUFACTURERS':'Fabricante',
+        'URL':'URL',
+        'GERBERDIR':'Dir. GERBER',
+        'ZIPFNAME':'Arquivo ZIP',
+        'DESCRIPTION':'Descrição',
+        'EXEC':'Cria GERBERs e ZIP',
+        'DETAIL':'Configurações',
+        'CLOSE':'Fechar',
+        'DESC2':'Mudanças aqui são temporárias. Edite os arquivos JSON para mudanças permanentes.',
+        'COMPLETE':'GerberZipper completo. \n\n Arquivo de saída: %s'
+    },
 }
 
 layer_list = [
@@ -167,6 +180,9 @@ def getstr(s):
     lang = wx.Locale.GetCanonicalName(wx.GetLocale())
     if(lang not in strtab):
         tab =strtab['default']
+    elif(lang[0:2] == 'pt_'):
+        # Use 'pt_BR' (Brazilian porthoguese) for 'pt_PT' (Portugal portuguese) or other variants.
+        tab =strtab['pt_BR']
     else:
         tab =strtab[lang]
     return tab[s]
