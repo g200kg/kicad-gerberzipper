@@ -19,49 +19,8 @@ import codecs
 import inspect
 import traceback
 
-version = "1.0.1"
-
-strtab = {
-    'default':{
-        'LABEL':'Make Gerber-files and ZIP for specific PCB manufacturers.',
-        'MENUFACTURERS':'Manufacturers',
-        'URL':'URL',
-        'GERBERDIR':'Gerber Dir',
-        'ZIPFNAME':'Zip Filename',
-        'DESCRIPTION':'Description',
-        'EXEC':'Make Gerber and ZIP',
-        'DETAIL':'Show Settings Details',
-        'CLOSE':'Close',
-        'DESC2':'The changes here are temporary. If you want to change it permanently edit the corresponding json file',
-        'COMPLETE':'GerberZipper Complete. \n\n Output file : %s'
-    },
-    'ja_JP':{
-        'LABEL':u'選択した基板メーカー向けのガーバーを作成し ZIP ファイルにまとめます。',
-        'MENUFACTURERS':u'基板メーカー',
-        'URL':'URL',
-        'GERBERDIR':u'ガーバーディレクトリ',
-        'ZIPFNAME':u'Zip ファイル名',
-        'DESCRIPTION':u'説明',
-        'EXEC':u'ガーバー/ZIPファイル作成',
-        'DETAIL':u'設定の詳細を表示',
-        'CLOSE':u'閉じる',
-        'DESC2':u'ここでの変更は一時的なものです。恒久的に変更したい場合は対応するjsonファイルを編集してください。',
-        'COMPLETE':u'GerberZipper 完了。 \n\n 出力ファイル : %s'
-    },
-    'pt_BR':{
-        'LABEL':'Cria arquivos GERBERs, zipando-os para fabricantes de PCB.',
-        'MENUFACTURERS':'Fabricante',
-        'URL':'URL',
-        'GERBERDIR':'Dir. GERBER',
-        'ZIPFNAME':'Arquivo ZIP',
-        'DESCRIPTION':'Descrição',
-        'EXEC':'Cria GERBERs e ZIP',
-        'DETAIL':'Configurações',
-        'CLOSE':'Fechar',
-        'DESC2':'Mudanças aqui são temporárias. Edite os arquivos JSON para mudanças permanentes.',
-        'COMPLETE':'GerberZipper completo. \n\n Arquivo de saída: %s'
-    },
-}
+version = "1.0.2"
+strtab = {}
 
 layer_list = [
     {'name':'F.Cu', 'id':pcbnew.F_Cu, 'fnamekey':'${filename(F.Cu)}'},
@@ -178,14 +137,13 @@ def getid(s):
 
 def getstr(s):
     lang = wx.Locale.GetCanonicalName(wx.GetLocale())
-#    alert(lang[0:2],wx.ICON_INFORMATION)
-    if(lang not in strtab):
-        tab =strtab['default']
-        if(lang[0:3] == 'pt_'):
-            # Use 'pt_BR' (Brazilian porthoguese) for 'pt_PT' (Portugal portuguese) or other variants.
-            tab =strtab['pt_BR']
+    tab = strtab['default']
+    if (lang in strtab):
+        tab = strtab[lang]
     else:
-        tab =strtab[lang]
+        for x in strtab:
+            if lang[0:3] in x:
+                tab = strtab[x]
     return tab[s]
 
 def forcedel(fname):
@@ -379,6 +337,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
     def Run(self):
         class Dialog(wx.Dialog):
             def __init__(self, parent):
+                global strtab
                 self.icon_file_name = os.path.join(os.path.dirname(__file__), 'icon.png')
                 self.manufacturers_dir = os.path.join(os.path.dirname(__file__), 'Manufacturers')
                 manufacturers_list = glob.glob('%s/*.json' % self.manufacturers_dir)
@@ -389,6 +348,14 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     except Exception as err:
                         alert('JSON error \n\n File : %s\n%s' % (os.path.basename(fname), err.message), wx.ICON_WARNING)
                 self.json_data = sorted(self.json_data, key=lambda x: x['Name'])
+                self.locale_dir = os.path.join(os.path.dirname(__file__), "Locale")
+                locale_list = glob.glob('%s/*.json' % self.locale_dir)
+                strtab = {}
+                for fpath in locale_list:
+                    fname = os.path.splitext(os.path.basename(fpath))[0]
+                    print (fname)
+                    strtab[fname] = json.load(open(fpath))
+
                 wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=(680,270))
                 self.panel = wx.Panel(self)
                 icon=wx.Icon(self.icon_file_name)

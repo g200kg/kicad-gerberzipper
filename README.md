@@ -32,6 +32,9 @@ The folder to put the script looks like this:
      +--- action_menu_gerber_zipper
              |
              +--- Manufacturers
+             |        +---...
+             +--- Locale
+             |        +---...
              +--- __init__.py
              +--- gerber_zipper_action.py
              +--- icon.png
@@ -43,7 +46,7 @@ The folder to put the script looks like this:
 
  ```
  >>> import pcbnew
- >>> print pcbnew.PLUGIN_DIRECTORIES_SEARCH
+ >>> print(pcbnew.PLUGIN_DIRECTORIES_SEARCH)
  ```
 
 ### Usage
@@ -146,6 +149,9 @@ Settings are written as `.json` files for each board manufacturer in the folder 
      +--- action_menu_gerber_zipper
              |
              +--- Manufacturers
+             |        +---...
+             +--- Locale
+             |        +---...
              +--- __init__.py
              +--- gerber_zipper_action.py
              +--- icon.png
@@ -158,7 +164,7 @@ Windows の AppData は隠しフォルダになっている事に注意してく
 
 ```
 >>> import pcbnew
->>> print pcbnew.PLUGIN_DIRECTORIES_SEARCH
+>>> print(pcbnew.PLUGIN_DIRECTORIES_SEARCH)
 ```
 
 
