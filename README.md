@@ -22,7 +22,7 @@ Place the `action_menu_gerber_zipper` folder as it is in the KiCad script folder
 - MacOS:
   > `~/Library/Application Support/kicad/scripting/plugins`  
   > or  
-  > `~/Library/Preference/kicad/scriptions/plugins`
+  > `~/Library/Preference/kicad/scripting/plugins`
 
 The folder to put the script looks like this:
 
@@ -140,7 +140,7 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 - MacOS:
   > `~/Library/Application Support/kicad/scripting/plugins`  
   > または  
-  > `~/Library/Preference/kicad/scriptions/plugins`
+  > `~/Library/Preference/kicad/scripting/plugins`
 
 スクリプトを置くフォルダは次のようになります:
 <pre>
