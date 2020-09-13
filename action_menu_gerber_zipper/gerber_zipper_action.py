@@ -178,11 +178,12 @@ def getid(s):
 
 def getstr(s):
     lang = wx.Locale.GetCanonicalName(wx.GetLocale())
+#    alert(lang[0:2],wx.ICON_INFORMATION)
     if(lang not in strtab):
         tab =strtab['default']
-    elif(lang[0:2] == 'pt_'):
-        # Use 'pt_BR' (Brazilian porthoguese) for 'pt_PT' (Portugal portuguese) or other variants.
-        tab =strtab['pt_BR']
+        if(lang[0:3] == 'pt_'):
+            # Use 'pt_BR' (Brazilian porthoguese) for 'pt_PT' (Portugal portuguese) or other variants.
+            tab =strtab['pt_BR']
     else:
         tab =strtab[lang]
     return tab[s]
