@@ -120,7 +120,7 @@ default_settings = {
 def message(s):
     print('GerberZipper: '+s)
 
-def alert(s, icon):
+def alert(s, icon=0):
     wx.MessageBox(s, 'Gerber Zipper', wx.OK|icon)
 
 def getindex(s):
@@ -158,9 +158,12 @@ def forceren(src, dst):
         os.rename(src, dst)
 
 def refill(board):
-    filler = pcbnew.ZONE_FILLER(board, None)
-    zones = board.Zones()
-    filler.Fill(zones)
+    try:
+        filler = pcbnew.ZONE_FILLER(board)
+        zones = board.Zones()
+        filler.Fill(zones)
+    except:
+        message('Refill Failed')
 
 class Editor():
     def __init__(self, panel):
