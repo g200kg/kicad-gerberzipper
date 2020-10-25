@@ -37,7 +37,7 @@
   "IncludeNetlistInfo":false,
 
   "Drill": {
-    "Drill":"*.drl",
+    "Drill":"*-PTH.drl",
     "DrillMap":"",
     "NPTH":"*-NPTH.drl",
     "NPTHMap":"",
