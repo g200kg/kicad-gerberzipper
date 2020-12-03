@@ -1,0 +1,66 @@
+{
+  "Name":"JLCPCB with stencil",
+  "Description":"Make Gerber-files/Zip for JLCPCB,  Upto 8 layers, with Stencil",
+  "URL":"https://jlcpcb.com/",
+  "GerberDir":"Gerber",
+  "ZipFilename":"*-JLCPCB.ZIP",
+  "Layers": {
+    "F.Cu":"*-F.Cu.gbr",
+    "B.Cu":"*-B.Cu.gbr",
+    "F.Paste":"*-F.Paste.gbr",
+    "B.Paste":"*-B.Paste.gbr",
+    "F.SilkS":"*-F.SilkS.gbr",
+    "B.SilkS":"*-B.SilkS.gbr",
+    "F.Mask":"*-F.Mask.gbr",
+    "B.Mask":"*-B.Mask.gbr",
+    "Edge.Cuts":"*-Edge.Cuts.gbr",
+    "In1.Cu":"*-In1.Cu.gbr",
+    "In2.Cu":"*-In2.Cu.gbr",
+    "In3.Cu":"*-In3.Cu.gbr",
+    "In4.Cu":"*-In4.Cu.gbr",
+    "In5.Cu":"*-In5.Cu.gbr",
+    "In6.Cu":"*-In6.Cu.gbr"
+  },
+  "PlotBorderAndTitle":false,
+  "PlotFootprintValues":false,
+  "PlotFootprintReferences":true,
+  "ForcePlotInvisible":false,
+  "ExcludeEdgeLayer":true,
+  "ExcludePadsFromSilk":true,
+  "DoNotTentVias":false,
+  "UseAuxOrigin":false,
+  "LineWidth":0.1,
+
+  "CoodinateFormat46":true,
+  "SubtractMaskFromSilk":true,
+  "UseExtendedX2format": false,
+  "IncludeNetlistInfo":false,
+
+  "Drill": {
+    "Drill":"*-PTH.drl",
+    "DrillMap":"",
+    "NPTH":"*-NPTH.drl",
+    "NPTHMap":"",
+    "Report":""
+  },
+  "MirrorYAxis":false,
+  "MinimalHeader":false,
+  "MergePTHandNPTH":false,
+  "RouteModeForOvalHoles":true,
+  "DrillUnitMM":false,
+  "ZerosFormat":{
+    "DecimalFormat":true,
+    "SuppressLeading":false,
+    "SuppressTrailing":false,
+    "KeepZeros":false
+  },
+  "MapFileFormat":{
+    "HPGL":false,
+    "PostScript":true,
+    "Gerber":false,
+    "DXF":false,
+    "SVG":false,
+    "PDF":false
+  },
+  "OptionalFiles":[]
+}
