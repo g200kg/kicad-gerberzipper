@@ -399,7 +399,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.detailbtn.Bind(wx.EVT_TOGGLEBUTTON, self.OnDetail)
 
                 self.editor = Editor(self.panel)
-                self.Select(0)
+                self.Select(self.plugin_settings_data["default"])
 
             def Select(self,n):
                 self.settings = self.json_data[n]
