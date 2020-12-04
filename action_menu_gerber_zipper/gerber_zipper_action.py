@@ -341,6 +341,15 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
         class Dialog(wx.Dialog):
             def __init__(self, parent):
                 global strtab
+                prefix_path = os.path.join(os.path.dirname(__file__))
+                settings_fname = os.path.join(prefix_path, 'settings.json');
+                self.plugin_settings_data = {}
+                if os.path.exists(settings_fname):
+                	self.plugin_settings_data = json.load(open(settings_fname))
+                else:
+                    self.plugin_settings_data["default"] = 0;
+                    json.dump(self.plugin_settings_data, open(settings_fname, "x"))
+
                 self.icon_file_name = os.path.join(os.path.dirname(__file__), 'icon.png')
                 self.manufacturers_dir = os.path.join(os.path.dirname(__file__), 'Manufacturers')
                 manufacturers_list = glob.glob('%s/*.json' % self.manufacturers_dir)
@@ -379,7 +388,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 wx.StaticText(self.panel, wx.ID_ANY, getstr('DESCRIPTION'),size=(120,25), pos=(20,170))
                 self.label = wx.StaticText(self.panel, wx.ID_ANY, '',size=(500,25), pos=(150,170))
 
-                self.manufacturers.SetSelection(0)
+                self.manufacturers.SetSelection(self.plugin_settings_data["default"])
                 self.detailbtn = wx.ToggleButton(self.panel, wx.ID_ANY, getstr('DETAIL'),size=(150,25),pos=(20,200))
                 self.execbtn = wx.Button(self.panel, wx.ID_ANY, getstr('EXEC'),size=(200,25),pos=(200,200))
                 self.clsbtn = wx.Button(self.panel, wx.ID_ANY, getstr('CLOSE'),size=(150,25),pos=(410,200))
@@ -390,10 +399,15 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.detailbtn.Bind(wx.EVT_TOGGLEBUTTON, self.OnDetail)
 
                 self.editor = Editor(self.panel)
-                self.Select(0)
+                self.Select(self.plugin_settings_data["default"])
 
             def Select(self,n):
                 self.settings = self.json_data[n]
+                # Save this selection as default
+                self.plugin_settings_data["default"] = n;
+                prefix_path = os.path.join(os.path.dirname(__file__))
+                settings_fname = os.path.join(prefix_path, 'settings.json');                
+                json.dump(self.plugin_settings_data, open(settings_fname,"w"))
                 self.label.SetLabel(self.settings.get('Description', ''))
                 self.url.SetValue(self.settings.get('URL','---'))
                 self.gerberdir.SetValue(self.settings.get('GerberDir','Gerber'))
