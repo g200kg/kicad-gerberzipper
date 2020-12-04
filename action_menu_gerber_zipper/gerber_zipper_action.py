@@ -368,7 +368,8 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     print (fname)
                     strtab[fname] = json.load(open(fpath))
 
-                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=(680,270))
+                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=(680, 270),
+                                   style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
                 self.panel = wx.Panel(self)
                 icon=wx.Icon(self.icon_file_name)
                 self.SetIcon(icon)
