@@ -178,6 +178,171 @@ def refill(board):
     except:
         message('Refill Failed')
 
+class Editor():
+    def __init__(self, panel):
+        self.panel = panel
+        self.layer = wx.grid.Grid(self.panel, wx.ID_ANY, size=Em(18,13), pos=Em(3,12))
+        self.layer.SetColLabelSize(Em(1,1)[1])
+        self.layer.DisableDragColSize()
+        self.layer.DisableDragRowSize()
+        self.layer.CreateGrid(len(layer_list), 2)
+        self.layer.SetColLabelValue(0, 'Layer')
+        self.layer.SetColLabelValue(1, 'Filename')
+        self.layer.SetRowLabelSize(1)
+        self.layer.ShowScrollbars(wx.SHOW_SB_NEVER,wx.SHOW_SB_DEFAULT)
+        self.layer.SetColSize(0, Em(7,1)[0])
+        self.layer.SetColSize(1, Em(9,1)[0])
+        for i in range(len(layer_list)):
+            self.layer.SetCellValue(i, 0, layer_list[i]['name'])
+            self.layer.SetReadOnly(i, 0, isReadOnly=True)
+        self.opt_PlotBorderAndTitle = wx.CheckBox(self.panel, wx.ID_ANY, 'PlotBorderAndTitle', pos=Em(23,12))
+        self.opt_PlotFootprintValues = wx.CheckBox(self.panel, wx.ID_ANY, 'PlotFootprintValues', pos=Em(23,13))
+        self.opt_PlotFootprintReferences = wx.CheckBox(self.panel, wx.ID_ANY, 'PlotFootprintReferences', pos=Em(23,14))
+        self.opt_ForcePlotInvisible = wx.CheckBox(self.panel, wx.ID_ANY, 'ForcePlotInvisible', pos=Em(23,15))
+        self.opt_ExcludeEdgeLayer = wx.CheckBox(self.panel, wx.ID_ANY, 'ExcludeEdgeLayer', pos=Em(23,16))
+        self.opt_ExcludePadsFromSilk = wx.CheckBox(self.panel, wx.ID_ANY, 'ExcludePadsFromSilk', pos=Em(23,17))
+        self.opt_DoNotTentVias = wx.CheckBox(self.panel, wx.ID_ANY, 'DoNotTentVias', pos=Em(23,18))
+        self.opt_UseAuxOrigin = wx.CheckBox(self.panel, wx.ID_ANY, 'UseAuxOrigin', pos=Em(23,19))
+        self.opt_LineWidthLabel = wx.StaticText(self.panel, wx.ID_ANY, 'LineWidth(mm):', pos=Em(23,20))
+        self.opt_LineWidth = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(5,1), pos=Em(33,20))
+        self.opt_SubtractMaskFromSilk = wx.CheckBox(self.panel, wx.ID_ANY, 'SubtractMaskFromSilk', pos=Em(23, 21))
+        self.opt_UseExtendedX2format = wx.CheckBox(self.panel, wx.ID_ANY, 'UseExtendedX2format', pos=Em(23, 22))
+        self.opt_CoodinateFormat46 = wx.CheckBox(self.panel, wx.ID_ANY, 'CoodinateFormat46', pos=Em(23, 23))
+        self.opt_IncludeNetlistInfo = wx.CheckBox(self.panel, wx.ID_ANY, 'IncludeNetlistInfo', pos=Em(23, 24))
+
+        self.drill = wx.grid.Grid(self.panel, wx.ID_ANY, size=Em(18,6,1,0), pos=Em(44,12))
+        self.drill.DisableDragColSize()
+        self.drill.DisableDragRowSize()
+        self.drill.CreateGrid(5, 2)
+        self.drill.DisableDragGridSize()
+        self.drill.ShowScrollbars(wx.SHOW_SB_NEVER,wx.SHOW_SB_NEVER)
+        self.drill.SetColLabelValue(0, 'Drill')
+        self.drill.SetColLabelValue(1, 'Filename')
+        self.drill.SetRowLabelSize(1)
+        self.drill.SetColSize(0, Em(9,1)[0])
+        self.drill.SetColSize(1, Em(9,1)[0])
+        drillfile = ['Drill', 'DrillMap', 'NPTH', 'NPTHMap', 'Report']
+        self.drill.SetColLabelSize(Em(1,1)[1])
+        for i in range(len(drillfile)):
+            self.drill.SetCellValue(i, 0, drillfile[i])
+            self.drill.SetReadOnly(i, 0, True)
+            self.drill.SetRowSize(i, Em(1,1)[1])
+        wx.StaticText(self.panel, wx.ID_ANY, 'Drill Unit :', pos=Em(44,18))
+        self.opt_DrillUnit = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('inch','mm'), style=wx.CB_READONLY, pos=Em(53,18), size=Em(8,1))
+        self.opt_MirrorYAxis = wx.CheckBox(self.panel, wx.ID_ANY, 'MirrorYAxis', pos=Em(44,19))
+        self.opt_MinimalHeader = wx.CheckBox(self.panel, wx.ID_ANY, 'MinimalHeader', pos=Em(44,20))
+        self.opt_MergePTHandNPTH = wx.CheckBox(self.panel, wx.ID_ANY, 'MergePTHandNPTH', pos=Em(44,21))
+        self.opt_RouteModeForOvalHoles = wx.CheckBox(self.panel, wx.ID_ANY, 'RouteModeForOvalHoles', pos=Em(44,22))
+        wx.StaticText(self.panel, wx.ID_ANY, 'Zeros :', pos=Em(44,23))
+        self.opt_ZerosFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('DecimalFormat','SuppressLeading','SuppresTrailing', 'KeepZeros'), pos=Em(50,23), size=Em(12,1), style=wx.CB_READONLY)
+        wx.StaticText(self.panel, wx.ID_ANY, 'MapFileFormat :', pos=Em(44,24))
+        self.opt_MapFileFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('HPGL','PostScript','Gerber','DXF','SVG','PDF'), pos=Em(54,24), size=Em(8,1), style=wx.CB_READONLY)
+
+        self.opt_OptionalLabel = wx.StaticText(self.panel, wx.ID_ANY, 'OptionalFile:', pos=Em(4,27))
+        self.opt_OptionalFile = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(12,1), pos=Em(15,27))
+        self.opt_OptionalContent = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(37,1), pos=Em(28,27))
+
+    def Set(self, settings):
+        self.settings=dict(default_settings,**settings)
+        l = self.settings.get('Layers',{})
+        for i in range(self.layer.GetNumberRows()):
+            k = self.layer.GetCellValue(i, 0)
+            if l.get(k,None) != None:
+                self.layer.SetCellValue(i, 1, l.get(k))
+            else:
+                self.layer.SetCellValue(i, 1, '')
+        l = self.settings.get('Drill',{})
+        for i in range(self.drill.GetNumberRows()):
+            k = self.drill.GetCellValue(i,0)
+            if l.get(k,None) != None:
+                self.drill.SetCellValue(i, 1, l.get(k))
+            else:
+                self.drill.SetCellValue(i, 1, '')
+        self.opt_PlotBorderAndTitle.SetValue(self.settings.get('PlotBorderAndTitle',False))
+        self.opt_PlotFootprintValues.SetValue(self.settings.get('PlotFootprintValues',True))
+        self.opt_PlotFootprintReferences.SetValue(self.settings.get('PlotFootprintReferences',True))
+        self.opt_ForcePlotInvisible.SetValue(self.settings.get('ForcePlotInvisible',False))
+        self.opt_ExcludeEdgeLayer.SetValue(self.settings.get('ExcludeEdgeLayer',True))
+        self.opt_ExcludePadsFromSilk.SetValue(self.settings.get('ExcludePadsFromSilk',True))
+        self.opt_DoNotTentVias.SetValue(self.settings.get('DoNotTentVias',False))
+        self.opt_UseAuxOrigin.SetValue(self.settings.get('UseAuxOrigin', False))
+        self.opt_LineWidth.SetValue(str(self.settings.get('LineWidth', 0.1)))
+        self.opt_SubtractMaskFromSilk.SetValue(self.settings.get('SubtractMaskFromSilk', False))
+        self.opt_UseExtendedX2format.SetValue(self.settings.get('UseExtendedX2format', False))
+        self.opt_CoodinateFormat46.SetValue(self.settings.get('CoodinateFormat46',True))
+        self.opt_IncludeNetlistInfo.SetValue(self.settings.get('IncludeNetlistInfo',False))
+        self.opt_DrillUnit.SetSelection(1 if self.settings.get('DrillUnitMM',True) else 0)
+        self.opt_MirrorYAxis.SetValue(self.settings.get('MirrorYAxis', False))
+        self.opt_MinimalHeader.SetValue(self.settings.get('MinimalHeader', False))
+        self.opt_MergePTHandNPTH.SetValue(self.settings.get('MergePTHandNPTH', False))
+        self.opt_RouteModeForOvalHoles.SetValue(self.settings.get('RouteModeForOvalHoles', True))
+        zeros = self.settings.get('ZerosFormat',{})
+        i = 0
+        for k in zeros:
+            if(zeros[k]):
+                i = {'DecimalFormat':0,'SuppressLeading':1,'SuppressTrailing':2,'KeepZeros':3}.get(k,0)
+        self.opt_ZerosFormat.SetSelection(i)
+        map = self.settings.get('MapFileFormat',{})
+        i = 2
+        for k in map:
+            if(map[k]):
+                i = {'HPGL':0,'PostScript':1,'Gerber':2,'DXF':3,'SVG':4,'PDF':5}.get(k,2)
+        self.opt_MapFileFormat.SetSelection(i)
+        files=self.settings.get('OptionalFiles',[])
+        if len(files)==0:
+            files=[{'name':'','content':''}]
+        self.opt_OptionalFile.SetValue(files[0]['name'])
+        self.opt_OptionalContent.SetValue(files[0]['content'])
+
+    def Get(self):
+        l = self.settings.get('Layers',{})
+        for i in range(self.layer.GetNumberRows()):
+            k = self.layer.GetCellValue(i, 0)
+            v = self.layer.GetCellValue(i, 1)
+            l[k] = v
+        self.settings['Layers'] = l
+        d = self.settings.get('Drill',{})
+        for i in range(self.drill.GetNumberRows()):
+            k = self.drill.GetCellValue(i, 0)
+            v = self.drill.GetCellValue(i, 1)
+            d[k] = v
+        self.settings['Drill'] = d
+        self.settings['PlotBorderAndTitle'] = self.opt_PlotBorderAndTitle.GetValue()
+        self.settings['PlotFootprintValues'] = self.opt_PlotFootprintValues.GetValue()
+        self.settings['PlotFootprintReferences'] = self.opt_PlotFootprintReferences.GetValue()
+        self.settings['ForcePlotInvisible'] = self.opt_ForcePlotInvisible.GetValue()
+        self.settings['ExcludeEdgeLayer'] = self.opt_ExcludeEdgeLayer.GetValue()
+        self.settings['ExcludePadsFromSilk'] = self.opt_ExcludePadsFromSilk.GetValue()
+        self.settings['DoNotTentVias'] = self.opt_DoNotTentVias.GetValue()
+        self.settings['UseAuxOrigin'] = self.opt_UseAuxOrigin.GetValue()
+        self.settings['LineWidth'] = self.opt_LineWidth.GetValue()
+        self.settings['SubtractMaskFromSilk'] = self.opt_SubtractMaskFromSilk.GetValue()
+        self.settings['UseExtendedX2format'] = self.opt_UseExtendedX2format.GetValue()
+        self.settings['CoodinateFormat46'] = self.opt_CoodinateFormat46.GetValue()
+        self.settings['IncludeNetlistInfo'] = self.opt_IncludeNetlistInfo.GetValue()
+        self.settings['DrillUnitMM'] = True if self.opt_DrillUnit.GetSelection() else False
+        self.settings['MirrorYAxis'] = self.opt_MirrorYAxis.GetValue()
+        self.settings['MinimalHeader'] = self.opt_MinimalHeader.GetValue()
+        self.settings['MergePTHandNPTH'] = self.opt_MergePTHandNPTH.GetValue()
+        self.settings['RouteModeForOvalHoles'] = self.opt_RouteModeForOvalHoles.GetValue()
+        zeros = self.settings['ZerosFormat']
+        i = self.opt_ZerosFormat.GetSelection()
+        zeros['DecimalFormat'] = i == 0
+        zeros['SuppressLeading'] = i == 1
+        zeros['SuppressTrailing'] = i == 2
+        zeros['KeepZeros'] = i == 3
+        map = self.settings['MapFileFormat']
+        i = self.opt_MapFileFormat.GetSelection()
+        map['HPGL'] = i == 0
+        map['PostScript'] = i == 1
+        map['Gerber'] = i == 2
+        map['DXF'] = i == 3
+        map['SVG'] = i == 4
+        map['PDF'] = i == 5
+        f = {'name':self.opt_OptionalFile.GetValue(), 'content':self.opt_OptionalContent.GetValue()}
+        self.settings['OptionalFiles'] = [f]
+        return self.settings
+
 class GerberZipperAction( pcbnew.ActionPlugin ):
     def defaults( self ):
         self.name = "Gerber Zipper"
@@ -217,7 +382,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     print (fname)
                     strtab[fname] = json.load(open(fpath))
                 InitEm()
-                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=Em(65,12),
+                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=Em(70,12),
                                    style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
                 self.panel = wx.Panel(self)
                 icon=wx.Icon(self.icon_file_name)
@@ -227,22 +392,21 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     manufacturers_arr.append(item['Name'])
                 
                 wx.StaticText(self.panel, wx.ID_ANY, getstr('LABEL'), size=Em(70,1), pos=Em(1,1))
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('MENUFACTURERS'),size=Em(14,1), pos=Em(1,2.5))
-
-                self.manufacturers = wx.ComboBox(self.panel, wx.ID_ANY, 'Select Manufacturers', size=Em(30,1.5), pos=Em(16,2.5), choices=manufacturers_arr, style=wx.CB_READONLY)
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('MENUFACTURERS'),size=Em(14,1), pos=Em(1,3))
+                self.manufacturers = wx.ComboBox(self.panel, wx.ID_ANY, 'Select Manufacturers', size=Em(30,1), pos=Em(16,3), choices=manufacturers_arr, style=wx.CB_READONLY)
                 wx.StaticText(self.panel, wx.ID_ANY, getstr('URL'),size=Em(14,1), pos=Em(1,4))
                 self.url = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(30,1), pos=Em(16,4), style=wx.TE_READONLY)
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('GERBERDIR'),size=Em(14,1), pos=Em(1,5.1))
-                self.gerberdir = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=Em(30,1), pos=Em(16,5.1))
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('ZIPFNAME'),size=Em(14,1), pos=Em(1,6.2))
-                self.zipfilename = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=Em(30,1), pos=Em(16,6.2))
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESCRIPTION'),size=Em(14,1), pos=Em(1,7.3))
-                self.label = wx.StaticText(self.panel, wx.ID_ANY, '',size=Em(45,1), pos=Em(16,7.3))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('GERBERDIR'),size=Em(14,1), pos=Em(1,5))
+                self.gerberdir = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=Em(30,1), pos=Em(16,5))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('ZIPFNAME'),size=Em(14,1), pos=Em(1,6))
+                self.zipfilename = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=Em(30,1), pos=Em(16,6))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESCRIPTION'),size=Em(14,1), pos=Em(1,7))
+                self.label = wx.StaticText(self.panel, wx.ID_ANY, '',size=Em(30,1), pos=Em(16,7))
 
                 self.manufacturers.SetSelection(self.plugin_settings_data.get("default",0))
-                self.detailbtn = wx.ToggleButton(self.panel, wx.ID_ANY, getstr('DETAIL'),size=Em(15,1),pos=Em(2,8.5))
-                self.execbtn = wx.Button(self.panel, wx.ID_ANY, getstr('EXEC'),size=Em(15,1),pos=Em(18,8.5))
-                self.clsbtn = wx.Button(self.panel, wx.ID_ANY, getstr('CLOSE'),size=Em(15,1),pos=Em(34,8.5))
+                self.detailbtn = wx.ToggleButton(self.panel, wx.ID_ANY, getstr('DETAIL'),size=Em(15,1),pos=Em(2,9))
+                self.execbtn = wx.Button(self.panel, wx.ID_ANY, getstr('EXEC'),size=Em(15,1),pos=Em(18,9))
+                self.clsbtn = wx.Button(self.panel, wx.ID_ANY, getstr('CLOSE'),size=Em(15,1),pos=Em(34,9))
                 wx.StaticLine(self.panel, wx.ID_ANY, size=(Em(65,1)[0],2), pos=Em(1,10.5))
                 self.manufacturers.Bind(wx.EVT_COMBOBOX, self.OnManufacturers)
                 self.clsbtn.Bind(wx.EVT_BUTTON, self.OnClose)
@@ -251,175 +415,11 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
 
                 wx.StaticBox(self.panel, wx.ID_ANY,'Gerber', pos=Em(2,11), size=Em(40,15))
                 wx.StaticBox(self.panel, wx.ID_ANY,'Other', pos=Em(2,26), size=Em(64,3))
-                wx.StaticBox(self.panel, wx.ID_ANY,'Drill', pos=Em(43,11), size=Em(20,15))
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=Em(2,29))
+                wx.StaticBox(self.panel, wx.ID_ANY,'Drill', pos=Em(43,11), size=Em(23,15))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=Em(2,31))
 
-#                self.panel = panel
-                self.layer = wx.grid.Grid(self.panel, wx.ID_ANY, size=Em(18,13), pos=Em(3,12))
-                self.layer.SetColLabelSize(Em(1,1)[1])
-                self.layer.DisableDragColSize()
-                self.layer.DisableDragRowSize()
-                self.layer.CreateGrid(len(layer_list), 2)
-                self.layer.SetColLabelValue(0, 'Layer')
-                self.layer.SetColLabelValue(1, 'Filename')
-                self.layer.SetRowLabelSize(1)
-                self.layer.ShowScrollbars(wx.SHOW_SB_NEVER,wx.SHOW_SB_DEFAULT)
-                self.layer.SetColSize(0, Em(7,1)[0])
-                self.layer.SetColSize(1, Em(9,1)[0])
-                for i in range(len(layer_list)):
-                    self.layer.SetCellValue(i, 0, layer_list[i]['name'])
-                    self.layer.SetReadOnly(i, 0, isReadOnly=True)
-                self.opt_PlotBorderAndTitle = wx.CheckBox(self.panel, wx.ID_ANY, 'PlotBorderAndTitle', pos=Em(23,12))
-                self.opt_PlotFootprintValues = wx.CheckBox(self.panel, wx.ID_ANY, 'PlotFootprintValues', pos=Em(23,13))
-                self.opt_PlotFootprintReferences = wx.CheckBox(self.panel, wx.ID_ANY, 'PlotFootprintReferences', pos=Em(23,14))
-                self.opt_ForcePlotInvisible = wx.CheckBox(self.panel, wx.ID_ANY, 'ForcePlotInvisible', pos=Em(23,15))
-                self.opt_ExcludeEdgeLayer = wx.CheckBox(self.panel, wx.ID_ANY, 'ExcludeEdgeLayer', pos=Em(23,16))
-                self.opt_ExcludePadsFromSilk = wx.CheckBox(self.panel, wx.ID_ANY, 'ExcludePadsFromSilk', pos=Em(23,17))
-                self.opt_DoNotTentVias = wx.CheckBox(self.panel, wx.ID_ANY, 'DoNotTentVias', pos=Em(23,18))
-                self.opt_UseAuxOrigin = wx.CheckBox(self.panel, wx.ID_ANY, 'UseAuxOrigin', pos=Em(23,19))
-                self.opt_LineWidthLabel = wx.StaticText(self.panel, wx.ID_ANY, 'LineWidth(mm):', pos=Em(23,20))
-                self.opt_LineWidth = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(5,1), pos=Em(33,20))
-                self.opt_SubtractMaskFromSilk = wx.CheckBox(self.panel, wx.ID_ANY, 'SubtractMaskFromSilk', pos=Em(23, 21))
-                self.opt_UseExtendedX2format = wx.CheckBox(self.panel, wx.ID_ANY, 'UseExtendedX2format', pos=Em(23, 22))
-                self.opt_CoodinateFormat46 = wx.CheckBox(self.panel, wx.ID_ANY, 'CoodinateFormat46', pos=Em(23, 23))
-                self.opt_IncludeNetlistInfo = wx.CheckBox(self.panel, wx.ID_ANY, 'IncludeNetlistInfo', pos=Em(23, 24))
-
-                self.drill = wx.grid.Grid(self.panel, wx.ID_ANY, size=Em(18,6,1,0), pos=Em(44,12))
-                self.drill.DisableDragColSize()
-                self.drill.DisableDragRowSize()
-                self.drill.CreateGrid(5, 2)
-                self.drill.DisableDragGridSize()
-                self.drill.ShowScrollbars(wx.SHOW_SB_NEVER,wx.SHOW_SB_NEVER)
-                self.drill.SetColLabelValue(0, 'Drill')
-                self.drill.SetColLabelValue(1, 'Filename')
-                self.drill.SetRowLabelSize(1)
-                self.drill.SetColSize(0, Em(9,1)[0])
-                self.drill.SetColSize(1, Em(9,1)[0])
-                drillfile = ['Drill', 'DrillMap', 'NPTH', 'NPTHMap', 'Report']
-                self.drill.SetColLabelSize(Em(1,1)[1])
-                for i in range(len(drillfile)):
-                    self.drill.SetCellValue(i, 0, drillfile[i])
-                    self.drill.SetReadOnly(i, 0, True)
-                    self.drill.SetRowSize(i, Em(1,1)[1])
-                wx.StaticText(self.panel, wx.ID_ANY, 'Drill Unit :', pos=Em(44,18))
-                self.opt_DrillUnit = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('inch','mm'), style=wx.CB_READONLY, pos=Em(53,18), size=Em(8,1))
-                self.opt_MirrorYAxis = wx.CheckBox(self.panel, wx.ID_ANY, 'MirrorYAxis', pos=Em(44,19))
-                self.opt_MinimalHeader = wx.CheckBox(self.panel, wx.ID_ANY, 'MinimalHeader', pos=Em(44,20))
-                self.opt_MergePTHandNPTH = wx.CheckBox(self.panel, wx.ID_ANY, 'MergePTHandNPTH', pos=Em(44,21))
-                self.opt_RouteModeForOvalHoles = wx.CheckBox(self.panel, wx.ID_ANY, 'RouteModeForOvalHoles', pos=Em(44,22))
-                wx.StaticText(self.panel, wx.ID_ANY, 'Zeros :', pos=Em(44,23))
-                self.opt_ZerosFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('DecimalFormat','SuppressLeading','SuppresTrailing', 'KeepZeros'), pos=Em(50,23), size=Em(12,1.5), style=wx.CB_READONLY)
-                wx.StaticText(self.panel, wx.ID_ANY, 'MapFileFormat :', pos=Em(44,24.5))
-                self.opt_MapFileFormat = wx.ComboBox(self.panel, wx.ID_ANY, '', choices=('HPGL','PostScript','Gerber','DXF','SVG','PDF'), pos=Em(54,24.5), size=Em(8,1.5), style=wx.CB_READONLY)
-
-                self.opt_OptionalLabel = wx.StaticText(self.panel, wx.ID_ANY, 'OptionalFile:', pos=Em(4,27.5))
-                self.opt_OptionalFile = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(12,1), pos=Em(15,27.5))
-                self.opt_OptionalContent = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(37,1), pos=Em(28,27.5))
-
-#                self.editor = Editor(self.panel)
+                self.editor = Editor(self.panel)
                 self.Select(self.plugin_settings_data.get("default",0))
-
-            def Set(self, settings):
-                self.settings=dict(default_settings,**settings)
-                l = self.settings.get('Layers',{})
-                for i in range(self.layer.GetNumberRows()):
-                    k = self.layer.GetCellValue(i, 0)
-                    if l.get(k,None) != None:
-                        self.layer.SetCellValue(i, 1, l.get(k))
-                    else:
-                        self.layer.SetCellValue(i, 1, '')
-                l = self.settings.get('Drill',{})
-                for i in range(self.drill.GetNumberRows()):
-                    k = self.drill.GetCellValue(i,0)
-                    if l.get(k,None) != None:
-                        self.drill.SetCellValue(i, 1, l.get(k))
-                    else:
-                        self.drill.SetCellValue(i, 1, '')
-                self.opt_PlotBorderAndTitle.SetValue(self.settings.get('PlotBorderAndTitle',False))
-                self.opt_PlotFootprintValues.SetValue(self.settings.get('PlotFootprintValues',True))
-                self.opt_PlotFootprintReferences.SetValue(self.settings.get('PlotFootprintReferences',True))
-                self.opt_ForcePlotInvisible.SetValue(self.settings.get('ForcePlotInvisible',False))
-                self.opt_ExcludeEdgeLayer.SetValue(self.settings.get('ExcludeEdgeLayer',True))
-                self.opt_ExcludePadsFromSilk.SetValue(self.settings.get('ExcludePadsFromSilk',True))
-                self.opt_DoNotTentVias.SetValue(self.settings.get('DoNotTentVias',False))
-                self.opt_UseAuxOrigin.SetValue(self.settings.get('UseAuxOrigin', False))
-                self.opt_LineWidth.SetValue(str(self.settings.get('LineWidth', 0.1)))
-                self.opt_SubtractMaskFromSilk.SetValue(self.settings.get('SubtractMaskFromSilk', False))
-                self.opt_UseExtendedX2format.SetValue(self.settings.get('UseExtendedX2format', False))
-                self.opt_CoodinateFormat46.SetValue(self.settings.get('CoodinateFormat46',True))
-                self.opt_IncludeNetlistInfo.SetValue(self.settings.get('IncludeNetlistInfo',False))
-                self.opt_DrillUnit.SetSelection(1 if self.settings.get('DrillUnitMM',True) else 0)
-                self.opt_MirrorYAxis.SetValue(self.settings.get('MirrorYAxis', False))
-                self.opt_MinimalHeader.SetValue(self.settings.get('MinimalHeader', False))
-                self.opt_MergePTHandNPTH.SetValue(self.settings.get('MergePTHandNPTH', False))
-                self.opt_RouteModeForOvalHoles.SetValue(self.settings.get('RouteModeForOvalHoles', True))
-                zeros = self.settings.get('ZerosFormat',{})
-                i = 0
-                for k in zeros:
-                    if(zeros[k]):
-                        i = {'DecimalFormat':0,'SuppressLeading':1,'SuppressTrailing':2,'KeepZeros':3}.get(k,0)
-                self.opt_ZerosFormat.SetSelection(i)
-
-                map = self.settings.get('MapFileFormat',{})
-                i = 2
-                for k in map:
-                    if(map[k]):
-                        i = {'HPGL':0,'PostScript':1,'Gerber':2,'DXF':3,'SVG':4,'PDF':5}.get(k,2)
-                self.opt_MapFileFormat.SetSelection(i)
-                files=self.settings.get('OptionalFiles',[])
-                if len(files)==0:
-                    files=[{'name':'','content':''}]
-                self.opt_OptionalFile.SetValue(files[0]['name'])
-                self.opt_OptionalContent.SetValue(files[0]['content'])
-
-            def Get(self):
-                l = self.settings.get('Layers',{})
-                for i in range(self.layer.GetNumberRows()):
-                    k = self.layer.GetCellValue(i, 0)
-                    v = self.layer.GetCellValue(i, 1)
-                    l[k] = v
-                self.settings['Layers'] = l
-                d = self.settings.get('Drill',{})
-                for i in range(self.drill.GetNumberRows()):
-                    k = self.drill.GetCellValue(i, 0)
-                    v = self.drill.GetCellValue(i, 1)
-                    d[k] = v
-                self.settings['Drill'] = d
-                self.settings['PlotBorderAndTitle'] = self.opt_PlotBorderAndTitle.GetValue()
-                self.settings['PlotFootprintValues'] = self.opt_PlotFootprintValues.GetValue()
-                self.settings['PlotFootprintReferences'] = self.opt_PlotFootprintReferences.GetValue()
-                self.settings['ForcePlotInvisible'] = self.opt_ForcePlotInvisible.GetValue()
-                self.settings['ExcludeEdgeLayer'] = self.opt_ExcludeEdgeLayer.GetValue()
-                self.settings['ExcludePadsFromSilk'] = self.opt_ExcludePadsFromSilk.GetValue()
-                self.settings['DoNotTentVias'] = self.opt_DoNotTentVias.GetValue()
-                self.settings['UseAuxOrigin'] = self.opt_UseAuxOrigin.GetValue()
-                self.settings['LineWidth'] = self.opt_LineWidth.GetValue()
-                self.settings['SubtractMaskFromSilk'] = self.opt_SubtractMaskFromSilk.GetValue()
-                self.settings['UseExtendedX2format'] = self.opt_UseExtendedX2format.GetValue()
-                self.settings['CoodinateFormat46'] = self.opt_CoodinateFormat46.GetValue()
-                self.settings['IncludeNetlistInfo'] = self.opt_IncludeNetlistInfo.GetValue()
-                self.settings['DrillUnitMM'] = True if self.opt_DrillUnit.GetSelection() else False
-                self.settings['MirrorYAxis'] = self.opt_MirrorYAxis.GetValue()
-                self.settings['MinimalHeader'] = self.opt_MinimalHeader.GetValue()
-                self.settings['MergePTHandNPTH'] = self.opt_MergePTHandNPTH.GetValue()
-                self.settings['RouteModeForOvalHoles'] = self.opt_RouteModeForOvalHoles.GetValue()
-                zeros = self.settings['ZerosFormat']
-                i = self.opt_ZerosFormat.GetSelection()
-                zeros['DecimalFormat'] = i == 0
-                zeros['SuppressLeading'] = i == 1
-                zeros['SuppressTrailing'] = i == 2
-                zeros['KeepZeros'] = i == 3
-                map = self.settings['MapFileFormat']
-                i = self.opt_MapFileFormat.GetSelection()
-                map['HPGL'] = i == 0
-                map['PostScript'] = i == 1
-                map['Gerber'] = i == 2
-                map['DXF'] = i == 3
-                map['SVG'] = i == 4
-                map['PDF'] = i == 5
-                f = {'name':self.opt_OptionalFile.GetValue(), 'content':self.opt_OptionalContent.GetValue()}
-                self.settings['OptionalFiles'] = [f]
-                return self.settings
 
             def Select(self,n):
                 self.settings = self.json_data[n]
@@ -432,8 +432,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.url.SetValue(self.settings.get('URL','---'))
                 self.gerberdir.SetValue(self.settings.get('GerberDir','Gerber'))
                 self.zipfilename.SetValue(self.settings.get('ZipFilename','*.ZIP'))
-#                self.editor.Set(self.settings)
-                self.Set(self.settings)
+                self.editor.Set(self.settings)
 
             def OnManufacturers(self,e):
                 obj = e.GetEventObject()
@@ -442,11 +441,10 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
 
             def OnDetail(self,e):
                 if self.detailbtn.GetValue():
-                    sz=Em(65,32)
+                    sz=Em(70,38)
                     self.SetSize(wx.Size(sz[0],sz[1]))
-                    self.opt_ZerosFormat.SetPosition(wx.Point(Em(50,23)[0],Em(50,23)[1]))
                 else:
-                    sz=Em(65,12)
+                    sz=Em(70,12)
                     self.SetSize(wx.Size(sz[0],sz[1]))
                 e.Skip()
 
@@ -456,8 +454,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
 
             def OnExec(self,e):
                 try:
-#                    self.settings = self.editor.Get()
-                    self.settings = self.Get()
+                    self.settings = self.editor.Get()
                     global zip_fname
                     board = pcbnew.GetBoard()
                     board_fname = board.GetFileName()

@@ -1,5 +1,5 @@
 {
-  "LABEL":"'Make Gerber-files and ZIP for specific PCB manufacturers.",
+  "LABEL":"Make Gerber-files and ZIP for specific PCB manufacturers.",
   "MENUFACTURERS":"Manufacturers",
   "URL":"URL",
   "GERBERDIR":"Gerber Dir",
