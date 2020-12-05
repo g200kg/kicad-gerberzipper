@@ -26,7 +26,7 @@
   "ExcludeEdgeLayer":true,
   "ExcludePadsFromSilk":true,
   "DoNotTentVias":false,
-  "UseAuxOrigin":true,
+  "UseAuxOrigin":false,
   "LineWidth":0.15,
 
   "CoodinateFormat46":true,
