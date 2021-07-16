@@ -150,6 +150,7 @@ def getid(s):
 
 def getstr(s):
     lang = wx.Locale.GetCanonicalName(wx.GetLocale())
+    lang = lang if lang else 'default'
     tab = strtab['default']
     if (lang in strtab):
         tab = strtab[lang]
