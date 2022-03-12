@@ -1,0 +1,40 @@
+{
+    "$schema": "https://go.kicad.org/pcm/schemas/v1",
+    "name": "GerberZip",
+    "description": "Generate Gerber/ZIP  for the specified PCB vendor",
+    "description_full": "Generate Gerber-files for the specified PCB vendor and Zip it.",
+    "identifier":"com.github.g200kg.kicad-gerberzipper",
+    "type":"plugin",
+    "author": {
+        "contact":{
+            "github":"https://github.com/g200kg",
+            "twitter":"@g200kg",
+            "web":"https://www.g200kg.com"
+        },
+        "name":"g200kg"
+    },
+    "maintainer":{
+        "contact":{
+            "github":"https://github.com/g200kg",
+            "twitter":"@g200kg",
+            "web":"https://www.g200kg.com"
+        },
+        "name":"g200kg"
+    },
+    "resources": {
+        "homepage": "https://github.com/g200kg/kicad-gerberzipper"
+    },
+    "license":"MIT",
+    "versions":[
+        {
+            "kicad_version": "5.1",
+            "platforms": [
+                "linux",
+                "macos",
+                "windows"
+            ],
+            "status": "testing",
+            "version": "1.0.5"
+        }
+    ]
+}

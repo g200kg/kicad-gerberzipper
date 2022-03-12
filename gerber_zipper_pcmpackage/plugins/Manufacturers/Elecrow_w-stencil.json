@@ -1,0 +1,66 @@
+{
+  "Name":"Elecrow with stencil",
+  "Description":"Make Gerber-files/Zip for Elecrow,  Upto 8 layers, with Stencil",
+  "URL":"https://www.elecrow.com/",
+  "GerberDir":"Gerber",
+  "ZipFilename":"*-ElecrowWStencil.ZIP",
+  "Layers": {
+    "F.Cu":"*.GTL",
+    "B.Cu":"*.GBL",
+    "F.Paste":"*.GTP",
+    "B.Paste":"*.GBP",
+    "F.SilkS":"*.GTO",
+    "B.SilkS":"*.GBO",
+    "F.Mask":"*.GTS",
+    "B.Mask":"*.GBS",
+    "Edge.Cuts":"*.GML",
+    "In1.Cu":"*.G1",
+    "In2.Cu":"*.G2",
+    "In3.Cu":"*.G3",
+    "In4.Cu":"*.G4",
+    "In5.Cu":"*.G5",
+    "In6.Cu":"*.G6"
+  },
+  "PlotBorderAndTitle":false,
+  "PlotFootprintValues":true,
+  "PlotFootprintReferences":true,
+  "ForcePlotInvisible":false,
+  "ExcludeEdgeLayer":true,
+  "ExcludePadsFromSilk":true,
+  "DoNotTentVias":false,
+  "UseAuxOrigin":false,
+  "LineWidth":0.1,
+
+  "CoodinateFormat46":true,
+  "SubtractMaskFromSilk":true,
+  "UseExtendedX2format": false,
+  "IncludeNetlistInfo":false,
+
+  "Drill": {
+    "Drill":"*.TXT",
+    "DrillMap":"",
+    "NPTH":"*-NPTH.TXT",
+    "NPTHMap":"",
+    "Report":""
+  },
+  "MirrorYAxis":false,
+  "MinimalHeader":false,
+  "MergePTHandNPTH":false,
+  "RouteModeForOvalHoles":true,
+  "DrillUnitMM":true,
+  "ZerosFormat":{
+    "DecimalFormat":true,
+    "SuppressLeading":false,
+    "SuppressTrailing":false,
+    "KeepZeros":false
+  },
+  "MapFileFormat":{
+    "HPGL":false,
+    "PostScript":true,
+    "Gerber":false,
+    "DXF":false,
+    "SVG":false,
+    "PDF":false
+  },
+  "OptionalFiles":[]
+}

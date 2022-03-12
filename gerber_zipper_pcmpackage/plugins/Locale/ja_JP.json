@@ -1,0 +1,13 @@
+{
+  "LABEL":"選択した基板メーカー向けのガーバーを作成し ZIP ファイルにまとめます。",
+  "MENUFACTURERS":"基板メーカー",
+  "URL":"URL",
+  "GERBERDIR":"ガーバーディレクトリ",
+  "ZIPFNAME":"Zip ファイル名",
+  "DESCRIPTION":"説明",
+  "EXEC":"ガーバー/ZIPファイル作成",
+  "DETAIL":"設定の詳細を表示",
+  "CLOSE":"閉じる",
+  "DESC2":"ここでの変更は一時的なものです。恒久的に変更したい場合は対応するjsonファイルを編集してください。",
+  "COMPLETE":"GerberZipper 完了。 \n\n 出力ファイル : %s"
+}

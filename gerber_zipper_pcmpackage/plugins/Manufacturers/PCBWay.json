@@ -1,0 +1,66 @@
+{
+  "Name":"PCBWay",
+  "Description":"Make Gerber-files/Zip for PCBWay,  Upto 8 layers, without Stencil",
+  "URL":"https://www.pcbway.com",
+  "GerberDir":"Gerber",
+  "ZipFilename":"*-PCBWay.ZIP",
+  "Layers": {
+    "F.Cu":"*.gtl",
+    "B.Cu":"*.gbl",
+    "F.Paste":"*.gtp",
+    "B.Paste":"*.gbp",
+    "F.SilkS":"*.gto",
+    "B.SilkS":"*.gbo",
+    "F.Mask":"*.gts",
+    "B.Mask":"*.gbs",
+    "Edge.Cuts":"*.gm1",
+    "In1.Cu":"*.gl2",
+    "In2.Cu":"*.gl3",
+    "In3.Cu":"*.gl4",
+    "In4.Cu":"*.gl5",
+    "In5.Cu":"*.gl6",
+    "In6.Cu":"*.gl7"
+  },
+  "PlotBorderAndTitle":false,
+  "PlotFootprintValues":true,
+  "PlotFootprintReferences":true,
+  "ForcePlotInvisible":false,
+  "ExcludeEdgeLayer":true,
+  "ExcludePadsFromSilk":true,
+  "DoNotTentVias":false,
+  "UseAuxOrigin":false,
+  "LineWidth":0.1,
+
+  "CoodinateFormat46":true,
+  "SubtractMaskFromSilk":false,
+  "UseExtendedX2format": false,
+  "IncludeNetlistInfo":false,
+
+  "Drill": {
+    "Drill":"*.drl",
+    "DrillMap":"",
+    "NPTH":"",
+    "NPTHMap":"",
+    "Report":""
+  },
+  "MirrorYAxis":false,
+  "MinimalHeader":true,
+  "MergePTHandNPTH":false,
+  "RouteModeForOvalHoles":true,
+  "DrillUnitMM":false,
+  "ZerosFormat":{
+    "DecimalFormat":false,
+    "SuppressLeading":true,
+    "SuppressTrailing":false,
+    "KeepZeros":false
+  },
+  "MapFileFormat":{
+    "HPGL":false,
+    "PostScript":true,
+    "Gerber":false,
+    "DXF":false,
+    "SVG":false,
+    "PDF":false
+  },
+  "OptionalFiles":[]
+}

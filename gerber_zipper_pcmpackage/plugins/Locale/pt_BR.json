@@ -1,0 +1,13 @@
+{
+  "LABEL":"Cria arquivos GERBERs, zipando-os para fabricantes de PCB.",
+  "MENUFACTURERS":"Fabricante",
+  "URL":"URL",
+  "GERBERDIR":"Dir. GERBER",
+  "ZIPFNAME":"Arquivo ZIP",
+  "DESCRIPTION":"Descrição",
+  "EXEC":"Cria GERBERs e ZIP",
+  "DETAIL":"Configurações",
+  "CLOSE":"Fechar",
+  "DESC2":"Mudanças aqui são temporárias. Edite os arquivos JSON para mudanças permanentes.",
+  "COMPLETE":"GerberZipper completo. \n\n Arquivo de saída: %s"
+}

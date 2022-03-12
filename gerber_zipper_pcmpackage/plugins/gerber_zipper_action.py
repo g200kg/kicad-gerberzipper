@@ -462,12 +462,9 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     global zip_fname
                     board = pcbnew.GetBoard()
                     board_fname = board.GetFileName()
+                    board_dir = os.path.dirname(board_fname)
                     board_basename = (os.path.splitext(os.path.basename(board_fname)))[0]
-                    gerber_dir = self.gerberdir.GetValue()
-                    if gerber_dir[0:2] == '~/':
-                        gerber_dir = '%s/%s' % (os.environ['HOME'], gerber_dir[2:])
-                    if gerber_dir[0] != '/' and gerber_dir[1] != ':':
-                        gerber_dir = '%s/%s' % (os.path.dirname(board_fname), gerber_dir)
+                    gerber_dir = '%s/%s' % (board_dir, self.gerberdir.GetValue())
                     zip_fname = '%s/%s' % (gerber_dir, self.zipfilename.GetValue().replace('*',board_basename))
                     if not os.path.exists(gerber_dir):
                         os.mkdir(gerber_dir)

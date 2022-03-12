@@ -1,0 +1,73 @@
+{
+  "Name":"P-Ban",
+  "Description":"Make Gerber-files/Zip for P-Ban,  Upto 8 layers, without Stencil",
+  "URL":"https://www.p-ban.com/",
+  "GerberDir":"Gerber",
+  "ZipFilename":"*-PBan.ZIP",
+  "Layers": {
+    "F.Cu":"*-F_Cu.gtl",
+    "B.Cu":"*-B_Cu.gbl",
+    "F.SilkS":"*-F_SilkS.gto",
+    "B.SilkS":"*-B_SilkS.gbo",
+    "F.Mask":"*-F_Mask.gts",
+    "B.Mask":"*-B_Mask.gbs",
+    "Edge.Cuts":"*-Edge_Cuts.gm1",
+    "In1.Cu":"*-In1_Cu.gp1",
+    "In2.Cu":"*-In2_Cu.gp2",
+    "In3.Cu":"*-In3_Cu.gp3",
+    "In4.Cu":"*-In4_Cu.gp4",
+    "In5.Cu":"*-In5_Cu.gp5",
+    "In6.Cu":"*-In6_Cu.gp6"
+  },
+  "PlotBorderAndTitle":false,
+  "PlotFootprintValues":true,
+  "PlotFootprintReferences":true,
+  "ForcePlotInvisible":false,
+  "ExcludeEdgeLayer":true,
+  "ExcludePadsFromSilk":true,
+  "DoNotTentVias":false,
+  "UseAuxOrigin":false,
+  "LineWidth":0.15,
+
+  "CoodinateFormat46":true,
+  "SubtractMaskFromSilk":false,
+  "UseExtendedX2format": true,
+  "IncludeNetlistInfo":false,
+
+  "Drill":{
+    "Drill":"*.drl",
+    "DrillMap":"*-drl_map.gbr",
+    "NPTH":"",
+    "NPTHMap":"",
+    "Report":"*-drl.rpt"
+  },
+  "MirrorYAxis":false,
+  "MinimalHeader":false,
+  "MergePTHandNPTH":true,
+  "RouteModeForOvalHoles":true,
+  "DrillUnitMM":true,
+  "ZerosFormat":{
+    "DecimalFormat":false,
+    "SuppressLeading":true,
+    "SuppressTrailing":false,
+    "KeepZeros":false
+  },
+  "MapFileFormat":{
+    "HPGL":false,
+    "PostScript":false,
+    "Gerber":true,
+    "DXF":false,
+    "SVG":false,
+    "PDF":false
+  },
+  "OptionalFiles":[
+    {
+      "name":"製造基準書.txt",
+      "content":"部品面パターン : ${filename(F.Cu)}\r\n半田面パターン : ${filename(B.Cu)}\r\n内層パターン1 : ${filename(In1.Cu)}\r\n内層パターン2 : ${filename(In2.Cu)}\r\n内層パターン3 : ${filename(In3.Cu)}\r\n内層パターン4 : ${filename(In4.Cu)}\r\n内層パターン5 : ${filename(In5.Cu)}\r\n内層パターン6 : ${filename(In6.Cu)}\r\n部品面レジスト : ${filename(F.Mask)}\r\n半田面レジスト : ${filename(B.Mask)}\r\n部品面シルク : ${filename(F.SilkS)}\r\n半田面シルク : ${filename(B.SilkS)}\r\n基板外形 : ${filename(Edge.Cuts)}\r\n\nドリルデータ : ${basename}.drl\r\nドリルマップ : ${basename}-drl_map.gbr\r\nドリルリスト : ${basename}-drl.rpt\r\n"
+    },
+    {
+      "name":"test",
+      "content":"Test {$basename}-files"
+    }
+  ]
+}

@@ -10,9 +10,21 @@ This is an action script that can be used with pcbnew since KiCad version 5.X (e
 Gerber output for the specified board vendor is performed, and the process of zipping the necessary files is automated with one click.
 
 #### Note
- v1.0.4 - The setting where UseAuxOrigin was "true" in each manufacturer has been changed to "false". This is to avoid the possibility of coordinate troubles when outputting the pos file.
+-  v1.0.5 - "Plugin and Content Manager" metadata added.
+
+-  v1.0.4 - The setting where UseAuxOrigin was "true" in each manufacturer has been changed to "false". This is to avoid the possibility of coordinate troubles when outputting the pos file.
 
 ### Install
+
+#### Install with "Plugin and Content Manager" (for KiCad 6+)
+
+- Download and extract the file, 'gerber_zipper_pcmpackage.zip'.
+- Open PCM (plugin and Content Manager) window from Menu 'Tools - Plugin and Content Manager'.
+- Select 'Install from File...' and specify the 'gerber_zipper_pcmpackage.zip'.
+
+![](images/20220312_gerberzipper1.png)
+
+#### Install manually (Without Plugin and Content Manager)
 
 Place the `action_menu_gerber_zipper` folder as it is in the KiCad script folder. The script folder depends on the OS. 
 

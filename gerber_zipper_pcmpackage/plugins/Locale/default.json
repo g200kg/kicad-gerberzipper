@@ -1,0 +1,13 @@
+{
+  "LABEL":"Make Gerber-files and ZIP for specific PCB manufacturers.",
+  "MENUFACTURERS":"Manufacturers",
+  "URL":"URL",
+  "GERBERDIR":"Gerber Dir",
+  "ZIPFNAME":"Zip Filename",
+  "DESCRIPTION":"Description",
+  "EXEC":"Make Gerber and ZIP",
+  "DETAIL":"Show Settings Details",
+  "CLOSE":"Close",
+  "DESC2":"The changes here are temporary. If you want to change it permanently edit the corresponding json file",
+  "COMPLETE":"GerberZipper Complete. \n\n Output file : %s"
+}
