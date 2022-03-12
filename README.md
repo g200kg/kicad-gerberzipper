@@ -143,7 +143,25 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 これは KiCad のバージョン5.X(初期版除く)以降の pcbnew で使用できるアクションスクリプトです。
 指定の基板業者向けのガーバー出力を行い、必要なファイルを ZIP でまとめるまでをワンクリックで自動化します。
 
+#### 注
+-  v1.0.5 - "プラグインとコンテンツマネージャー用のメタデータを追加。
+
+-  v1.0.4 - 各マニュファクチャの設定で UseAuxOrigin が "true" だったのを "false"　に変更した。 これは pos ファイルを出力する際に座標の問題が起こる可能性を避けるためです。
+
 ### インストール
+
+#### "プラグインとコンテンツマネージャー" を使用してインストールする場合 (KiCad 6 以降)
+
+- ダウンロードして、中にあるファイル 'gerber_zipper_pcmpackage.zip' を取り出してください。
+
+- "プラグインとコンテンツマネージャー" ウインドウをメニューの "ツール" から開きます。
+
+- 画面下部の "ファイルからインストール..." を選択し、'gerber_zipper_pcmpackage.zip' を指定します。
+
+![](images/20220312_gerberzipper1.png)
+
+#### 手動でインストールする場合
+
 　`action_menu_gerber_zipper` のフォルダをそのまま KiCad のスクリプトフォルダに配置してください。スクリプトフォルダは OS によって異なります。
 
 - Linux:
