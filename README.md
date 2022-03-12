@@ -18,9 +18,9 @@ Gerber output for the specified board vendor is performed, and the process of zi
 
 #### Install with "Plugin and Content Manager" (for KiCad 6+)
 
-- Download the Zip from 'Release'.
+- Download from this repository and get 'pcmpackage.zip' file.
 - Open PCM (plugin and Content Manager) window from Menu 'Tools - Plugin and Content Manager'.
-- Select 'Install from File...' and specify the downloaded zip file.
+- Select 'Install from File...' and specify the 'pcmpackage.zip' file.
 
 ![](images/20220312_gerberzipper1.png)
 
@@ -152,15 +152,15 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 
 #### "プラグインとコンテンツマネージャー" を使用してインストールする場合 (KiCad 6 以降)
 
-- Release から Zip ファイルをダウンロードします。
+- このリポジトリからダウンロードして pcmpackage.zip を取得します。
 - "プラグインとコンテンツマネージャー" ウインドウをメニューの "ツール" から開きます。
-- 画面下部の "ファイルからインストール..." を選択し、'gerber_zipper_pcmpackage.zip' を指定します。
+- 画面下部の "ファイルからインストール..." を選択し、ダウンロードした 'pcmpackage.zip' を指定します。
 
 ![](images/20220312_gerberzipper1.png)
 
 #### 手動でインストールする場合
 
-　`plugins` のフォルダーを `GerberZipper` にリネームしてそのまま KiCad のスクリプトフォルダに配置してください。スクリプトフォルダは OS によって異なります。
+　`plugins` のフォルダーを `GerberZipper` にリネームしてそのまま KiCad のスクリプトフォルダに配置します。スクリプトフォルダは OS によって異なります。
 
 - Linux:
   > `~/.kicad/scripting/plugins`
