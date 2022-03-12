@@ -1,6 +1,6 @@
 {
     "$schema": "https://go.kicad.org/pcm/schemas/v1",
-    "name": "GerberZip",
+    "name": "GerberZipper",
     "description": "Generate Gerber/ZIP  for the specified PCB vendor",
     "description_full": "Generate Gerber-files for the specified PCB vendor and Zip it.",
     "identifier":"com.github.g200kg.kicad-gerberzipper",

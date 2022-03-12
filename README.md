@@ -18,15 +18,15 @@ Gerber output for the specified board vendor is performed, and the process of zi
 
 #### Install with "Plugin and Content Manager" (for KiCad 6+)
 
-- Download and extract the file, 'gerber_zipper_pcmpackage.zip'.
+- Download the Zip from 'Release'.
 - Open PCM (plugin and Content Manager) window from Menu 'Tools - Plugin and Content Manager'.
-- Select 'Install from File...' and specify the 'gerber_zipper_pcmpackage.zip'.
+- Select 'Install from File...' and specify the downloaded zip file.
 
 ![](images/20220312_gerberzipper1.png)
 
 #### Install manually (Without Plugin and Content Manager)
 
-Place the `action_menu_gerber_zipper` folder as it is in the KiCad script folder. The script folder depends on the OS. 
+Rename "plugins" folder to "GerberZipper" and place to the subfolder of the KiCad script folder. The script folder depends on the OS. 
 
 - Linux:
   > `~/.kicad/scripting/plugins`
@@ -44,7 +44,7 @@ The folder to put the script looks like this:
 <pre>
 .../kicad/scripting/plugins
      |
-     +--- action_menu_gerber_zipper
+     +--- GerberZipper
              |
              +--- Manufacturers
              |        +---...
@@ -152,17 +152,15 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 
 #### "プラグインとコンテンツマネージャー" を使用してインストールする場合 (KiCad 6 以降)
 
-- ダウンロードして、中にあるファイル 'gerber_zipper_pcmpackage.zip' を取り出してください。
-
+- Release から Zip ファイルをダウンロードします。
 - "プラグインとコンテンツマネージャー" ウインドウをメニューの "ツール" から開きます。
-
 - 画面下部の "ファイルからインストール..." を選択し、'gerber_zipper_pcmpackage.zip' を指定します。
 
 ![](images/20220312_gerberzipper1.png)
 
 #### 手動でインストールする場合
 
-　`action_menu_gerber_zipper` のフォルダをそのまま KiCad のスクリプトフォルダに配置してください。スクリプトフォルダは OS によって異なります。
+　`plugins` のフォルダーを `GerberZipper` にリネームしてそのまま KiCad のスクリプトフォルダに配置してください。スクリプトフォルダは OS によって異なります。
 
 - Linux:
   > `~/.kicad/scripting/plugins`
@@ -179,7 +177,7 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 <pre>
 .../kicad/scripting/plugins
      |
-     +--- action_menu_gerber_zipper
+     +--- GerberZipper
              |
              +--- Manufacturers
              |        +---...
