@@ -16,7 +16,17 @@ Gerber output for the specified board vendor is performed, and the process of zi
 
 ### Install
 
-#### Install with "Plugin and Content Manager" (for KiCad 6+)
+#### Install from repository with "Plugin and Content Manager" (for KiCad 6+)
+
+- Open PCM (plugin and Content Manager) window from Menu 'Tools - Plugin and Content Manager'.
+- Add and Save a line bellow with "+" button.  <br/> `https://raw.githubusercontent.com/g200kg/kicad-pcm-repository/main/repository.json`  
+![](images/20220313_pcm3.png)
+- Select repository "G200kg KiCad PCM repository".
+![](images/20220313_pcm4.png)
+- The installation will run when you press the "Apply Changes" button.
+![](images/20220313_pcm5.png);
+
+#### Install package-file with "Plugin and Content Manager" (for KiCad 6+)
 
 - Download from this repository and get 'pcmpackage.zip' file.
 - Open PCM (plugin and Content Manager) window from Menu 'Tools - Plugin and Content Manager'.
@@ -150,7 +160,18 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 
 ### インストール
 
-#### "プラグインとコンテンツマネージャー" を使用してインストールする場合 (KiCad 6 以降)
+#### "プラグインとコンテンツマネージャー" を使用してリポジトリからインストールする場合 (KiCad 6 以降)
+
+- "プラグインとコンテンツマネージャー" ウインドウをメニューの "ツール" から開きます。
+- "+" ボタンで次のURLを追加して保存します。 
+    `https://raw.githubusercontent.com/g200kg/kicad-pcm-repository/main/repository.json`
+![](images/20220313_pcm3.png)
+- リポジトリの選択に "g200kg KiCad PCM repository" が追加され、選択するとGerberZipperのインストール指示の画面が出てきます。
+![](images/20220313_pcm4.png)
+- インストールは "変更を適用" ボタンを押した時に実行されます。
+![](images/20220313_pcm5.png);
+
+#### "プラグインとコンテンツマネージャー" を使用してプラグインのパッケージファイルを直接インストールする場合 (KiCad 6 以降)
 
 - このリポジトリからダウンロードして pcmpackage.zip を取得します。
 - "プラグインとコンテンツマネージャー" ウインドウをメニューの "ツール" から開きます。
