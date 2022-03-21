@@ -7,8 +7,8 @@
   "Layers": {
     "F.Cu":"*-F_Cu.gtl",
     "B.Cu":"*-B_Cu.gbl",
-    "F.Paste":"",
-    "B.Paste":"",
+    "F.Paste":"*-F_Paste.gtp",
+    "B.Paste":"*-B_Paste.gbp",
     "F.SilkS":"*-F_SilkS.gto",
     "B.SilkS":"*-B_SilkS.gbo",
     "F.Mask":"*-F_Mask.gts",
