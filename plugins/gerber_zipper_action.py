@@ -206,7 +206,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.json_data = []
                 for fname in manufacturers_list:
                     try:
-                        self.json_data.append(json.load(open(fname)))
+                        self.json_data.append(json.load(codecs.open(fname, 'r', 'utf-8')))
                     except Exception as err:
                         alert('JSON error \n\n File : %s\n%s' % (os.path.basename(fname), err.message), wx.ICON_WARNING)
                 self.json_data = sorted(self.json_data, key=lambda x: x['Name'])
@@ -216,7 +216,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 for fpath in locale_list:
                     fname = os.path.splitext(os.path.basename(fpath))[0]
                     print (fname)
-                    strtab[fname] = json.load(open(fpath))
+                    strtab[fname] = json.load(codecs.open(fpath, 'r', 'utf-8'))
                 InitEm()
                 wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=Em(65,12),
                                    style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
