@@ -208,7 +208,8 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     try:
                         self.json_data.append(json.load(codecs.open(fname, 'r', 'utf-8')))
                     except Exception as err:
-                        alert('JSON error \n\n File : %s\n%s' % (os.path.basename(fname), err.message), wx.ICON_WARNING)
+                        tb = sys.exc_info()[2]
+                        alert('JSON error \n\n File : %s\n%s' % (os.path.basename(fname),err.with_traceback(tb)), wx.ICON_WARNING)
                 self.json_data = sorted(self.json_data, key=lambda x: x['Name'])
                 self.locale_dir = os.path.join(os.path.dirname(__file__), "Locale")
                 locale_list = glob.glob('%s/*.json' % self.locale_dir)
