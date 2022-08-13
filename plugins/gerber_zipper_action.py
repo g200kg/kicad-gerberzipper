@@ -554,10 +554,10 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     ew.SetFormat(self.settings.get('DrillUnitMM',True), excellon_format, 3, 3)
                     offset = wxPoint(0,0)
                     if self.settings.get('UseAuxOrigin',False):
-                        if hasattr(board, 'GetAuxOrigin'):
-                            offset = board.GetAuxOrigin()
+                        bds = board.GetDesignSettings()
+                        if hasattr(bds, 'GetAuxOrigin'):
+                            offset = bds.GetAuxOrigin()
                         else:
-                            bds = board.GetDesignSettings()
                             offset = bds.m_AuxOrigin
                     ew.SetOptions(self.settings.get('MirrorYAxis',False), self.settings.get('MinimalHeader',False), offset, self.settings.get('MergePTHandNPTH',False))
                     ew.SetRouteModeForOvalHoles(self.settings.get('RouteModeForOvalHoles'))
