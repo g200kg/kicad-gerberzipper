@@ -10,6 +10,8 @@ This is an action script that can be used with pcbnew since KiCad version 5.X (e
 Gerber output for the specified board vendor is performed, and the process of zipping the necessary files is automated with one click.
 
 #### Note
+-  v1.0.7 - Fix version display.
+
 -  v1.0.6 - Fix error when "UseAuxOrigin".
 
 -  v1.0.5 - "Plugin and Content Manager" metadata added.
