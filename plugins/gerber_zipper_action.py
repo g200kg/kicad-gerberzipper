@@ -19,7 +19,7 @@ import codecs
 import inspect
 import traceback
 
-version = "1.0.5"
+version = "1.0.6"
 strtab = {}
 
 layer_list = [
