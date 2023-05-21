@@ -481,7 +481,10 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     po.SetPlotValue( self.settings.get('PlotFootprintValues',True))
                     po.SetPlotReference( self.settings.get('PlotFootprintReferences',True))
                     po.SetPlotInvisibleText( self.settings.get('ForcePlotInvisible',False))
-                    po.SetExcludeEdgeLayer( self.settings.get('ExcludeEdgeLayer',True))
+                    try: # kicad < 6.99
+                        po.SetExcludeEdgeLayer( self.settings.get('ExcludeEdgeLayer',True))
+                    except AttributeError:
+                        pass
                     if hasattr(po,'SetPlotPadsOnSilkLayer'):
                         po.SetPlotPadsOnSilkLayer( not self.settings.get('ExcludePadsFromSilk',False))
                     po.SetPlotViaOnMaskLayer( self.settings.get('DoNotTentVias',False))
@@ -551,8 +554,11 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                         excellon_format = EXCELLON_WRITER.SUPPRESS_TRAILING
                     if zeros.get('KeepZeros'):
                         excellon_format = EXCELLON_WRITER.KEEP_ZEROS
-                    ew.SetFormat(self.settings.get('DrillUnitMM',True), excellon_format, 3, 3)
+                    ew.SetFormat(self.settings.get('DrillUnitMM',True), excellon_format, 3, 3)                    
                     offset = wxPoint(0,0)
+                    # wxPoint in < 6.99, VECTOR2I in >=6.99 
+                    OffsetType = type(board.GetDesignSettings().GetAuxOrigin())
+                    offset = OffsetType(0,0)
                     if self.settings.get('UseAuxOrigin',False):
                         bds = board.GetDesignSettings()
                         if hasattr(bds, 'GetAuxOrigin'):
