@@ -10,6 +10,8 @@ This is an action script that can be used with pcbnew since KiCad version 5.X (e
 Gerber output for the specified board vendor is performed, and the process of zipping the necessary files is automated with one click.
 
 #### Note
+-  v1.0.8 - Workaround for KiCad 7.x
+
 -  v1.0.7 - Fix version display.
 
 -  v1.0.6 - Fix error when "UseAuxOrigin".
@@ -158,6 +160,12 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 指定の基板業者向けのガーバー出力を行い、必要なファイルを ZIP でまとめるまでをワンクリックで自動化します。
 
 #### 注
+-  v1.0.8 - KiCad 7.x 用のワークアラウンド。
+
+-  v1.0.7 - バージョン表示の修正。
+
+-  v1.0.6 - "UseAuxOrigin" 時のエラー修正。
+
 -  v1.0.5 - "プラグインとコンテンツマネージャー用のメタデータを追加。
 
 -  v1.0.4 - 各マニュファクチャの設定で UseAuxOrigin が "true" だったのを "false"　に変更した。 これは pos ファイルを出力する際に座標の問題が起こる可能性を避けるためです。
