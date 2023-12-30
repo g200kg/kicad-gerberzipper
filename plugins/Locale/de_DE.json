@@ -1,0 +1,13 @@
+{
+  "LABEL":"Erzeuge Gerber-Dateien und ZIP-Datei für bestimmte Hersteller.",
+  "MENUFACTURERS":"Hersteller/Vorgabe",
+  "URL":"URL",
+  "GERBERDIR":"Gerber Ordner",
+  "ZIPFNAME":"ZIP Dateiname",
+  "DESCRIPTION":"Beschreibung",
+  "EXEC":"Erzeuge Gerber und ZIP",
+  "DETAIL":"Zeige Einstellungen",
+  "CLOSE":"Schließen",
+  "DESC2":"Die Einstellungen sind temporär. Permanente Einstellungen können in den jeweiligen JSON Dateien gemacht werden.",
+  "COMPLETE":"Export fertiggestellt.\n\nAusgabe: %s"
+}
