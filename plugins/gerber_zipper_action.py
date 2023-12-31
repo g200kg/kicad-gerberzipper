@@ -20,7 +20,7 @@ import inspect
 import traceback
 import re
 
-version = "1.1.0"
+version = "1.1.2"
 strtab = {}
 
 layer_list = [
@@ -149,7 +149,7 @@ def InitEm():
     chsize=(tx[0],tx[1]*1.5)
 
 def Em(x,y,dx=0,dy=0):
-    return (chsize[0]*x+dx, chsize[1]*y+dy)
+    return (int(chsize[0]*x+dx), int(chsize[1]*y+dy))
 
 def getindex(s):
     for i in range(len(layer_list)):
@@ -194,6 +194,8 @@ def refill(board):
     except:
         message('Refill Failed')
 
+    
+
 def getsubkey(s):
     l = s.split(' ')
     subkeys = {}
@@ -225,6 +227,48 @@ def strreplace(s,d):
         s = s.replace('${'+k+'}', str(d[k]))
     s = re.sub('\${[a-zA-Z]*}', '', s)
     return s
+
+class tableFile():
+    def __init__(self, fn):
+        self.row = 0
+        self.type = 'txt'
+        if fn.endswith('.csv'):
+            self.type = 'csv'
+        self.fname = fn
+        self.f = open(fn, mode='w', encoding='utf-8')
+    
+    def setTabs(self, tabs):
+        self.tabs = tabs
+
+    def addLine(self, line):
+        self.f.write(line + '\n')
+        self.row += 1
+    
+    def addRow(self, cells):
+        if self.type == 'csv':
+            self.f.write(','.join(cells) + '\n')
+        else:
+            col = 0
+            rtxt = ''
+            tabcnt = 0
+            nexttab = self.tabs[0]
+            for txt in cells:
+                if tabcnt < len(self.tabs):
+                    lenmax = nexttab - col - 1
+                    txt = txt[:lenmax]
+                    rtxt += txt
+                    col += len(txt)
+                    spclen = nexttab - col
+                    rtxt += ' ' * spclen
+                    col += spclen
+                    tabcnt += 1
+                    if(tabcnt < len(self.tabs)):
+                        nexttab += self.tabs[tabcnt]
+            self.f.write(rtxt + '\n')
+        self.row += 1
+    
+    def close(self):
+        self.f.close()
 
 class GerberZipperAction( pcbnew.ActionPlugin ):
     def defaults( self ):
@@ -516,7 +560,6 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                             bomList[val] = {'val':val, 'ref':fp.GetReference(), 'fp':fp.GetFPIDAsString().split(':')[1], 'qty':1}
                             bomList[val].update(fp.GetProperties())
                             bomList[val].update(getsubkey(val))
-
                     with codecs.open(bom_fname, 'w', 'utf-8') as f:
                         f.write(bomParam.get('Header') + '\r\n')
                         rowformat = bomParam.get('Row')

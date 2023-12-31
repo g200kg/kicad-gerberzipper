@@ -10,6 +10,8 @@ This is an action script that can be used with pcbnew since KiCad version 5.X (e
 Gerber output for the specified board vendor is performed, and the process of zipping the necessary files is automated with one click.
 
 #### Note
+-  v1.1.2 - Fix crash on Ubuntu
+
 -  v1.1.0 - Supports BOM/POS file generation
 
 -  v1.0.8 - Workaround for KiCad 7.x
@@ -191,6 +193,8 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 指定の基板業者向けのガーバー出力を行い、必要なファイルを ZIP でまとめるまでをワンクリックで自動化します。
 
 #### 注
+-  v1.1.2 - Ubuntu でクラッシュする問題に対処。
+
 -  v1.1.0 - BOM/POSファイルの生成をサポート。
 
 -  v1.0.8 - KiCad 7.x 用のワークアラウンド。
