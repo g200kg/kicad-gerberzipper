@@ -1,7 +1,7 @@
 # coding: utf-8
 # file : gerber_zipper_action.py
 #
-# Copyright (C) 2020 g200kg
+# Copyright (C) 2020-2023 g200kg
 #   Released under MIT License
 #
 
@@ -18,8 +18,9 @@ import sys
 import codecs
 import inspect
 import traceback
+import re
 
-version = "1.0.8"
+version = "1.1.0"
 strtab = {}
 
 layer_list = [
@@ -114,8 +115,22 @@ default_settings = {
     "SVG":False,
     "PDF":False
   },
-  "OptionalFiles":[]
+  "OptionalFiles":[],
+  "BOMFile":{
+    "Filename":"*-BOM.csv",
+    "Header":"Comment, Designator, Footprint, Part#, Qty",
+    "Row": "\"${val}\",\"${ref}\",\"${fp}\",\"${PN}\",\"${qty}\"",
+    "Footer":""
+  },
+  "PosFile":{
+    "TopFilename":"*-POS-Top.csv",
+    "BottomFilename":"*-POS-Bottom.csv",
+    "Header": "Designator, PosX, PosY, Side, Rotation, Package, Type",
+    "Row": "\"${ref}\",\"${x}\",\"${y}\",${side},${rot},\"${fp}\",\"${type}\"",
+    "Footer":""
+  }
 }
+
 
 chsize = (10,20)
 
@@ -158,7 +173,7 @@ def getstr(s):
         for x in strtab:
             if lang[0:3] in x:
                 tab = strtab[x]
-    return tab[s]
+    return tab.get(s, strtab['default'][s])
 
 def forcedel(fname):
     if os.path.exists(fname):
@@ -178,6 +193,38 @@ def refill(board):
         filler.Fill(zones)
     except:
         message('Refill Failed')
+
+def getsubkey(s):
+    l = s.split(' ')
+    subkeys = {}
+    for sk in l:
+        sks = sk.split(':')
+        if(len(sks) == 2):
+            subkeys[sks[0]] = sks[1]
+    return subkeys
+
+def tabexp(str,tabTable):
+    strList = str.split('\t')
+    result = ''
+    curColumn = 0
+    strIdx = 0
+    nextTab = 0
+    for strCur in strList:
+        strCur = strCur[:(tabTable[strIdx]-1)]
+        while curColumn < nextTab:
+            curColumn += 1
+            result += ' '
+        result += strCur
+        curColumn += len(strCur)
+        nextTab += tabTable[strIdx]
+        strIdx += 1
+    return result
+
+def strreplace(s,d):
+    for k in d:
+        s = s.replace('${'+k+'}', str(d[k]))
+    s = re.sub('\${[a-zA-Z]*}', '', s)
+    return s
 
 class GerberZipperAction( pcbnew.ActionPlugin ):
     def defaults( self ):
@@ -219,7 +266,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     print (fname)
                     strtab[fname] = json.load(codecs.open(fpath, 'r', 'utf-8'))
                 InitEm()
-                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=Em(65,12),
+                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=Em(75,12),
                                    style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
                 self.panel = wx.Panel(self)
                 icon=wx.Icon(self.icon_file_name)
@@ -244,11 +291,13 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.manufacturers.SetSelection(self.plugin_settings_data.get("default",0))
                 self.detailbtn = wx.ToggleButton(self.panel, wx.ID_ANY, getstr('DETAIL'),size=Em(15,1),pos=Em(2,8.5))
                 self.execbtn = wx.Button(self.panel, wx.ID_ANY, getstr('EXEC'),size=Em(15,1),pos=Em(18,8.5))
-                self.clsbtn = wx.Button(self.panel, wx.ID_ANY, getstr('CLOSE'),size=Em(15,1),pos=Em(34,8.5))
+                self.bomposbtn = wx.Button(self.panel, wx.ID_ANY, getstr('BOMPOSEXEC'),size=Em(15,1),pos=Em(34,8.5))
+                self.clsbtn = wx.Button(self.panel, wx.ID_ANY, getstr('CLOSE'),size=Em(15,1),pos=Em(50,8.5))
                 wx.StaticLine(self.panel, wx.ID_ANY, size=(Em(65,1)[0],2), pos=Em(1,10.5))
                 self.manufacturers.Bind(wx.EVT_COMBOBOX, self.OnManufacturers)
                 self.clsbtn.Bind(wx.EVT_BUTTON, self.OnClose)
                 self.execbtn.Bind(wx.EVT_BUTTON, self.OnExec)
+                self.bomposbtn.Bind(wx.EVT_BUTTON, self.OnBomPos)
                 self.detailbtn.Bind(wx.EVT_TOGGLEBUTTON, self.OnDetail)
 
                 wx.StaticBox(self.panel, wx.ID_ANY,'Gerber', pos=Em(2,11), size=Em(40,15))
@@ -442,13 +491,105 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.Select(obj.GetSelection())
                 e.Skip()
 
+            def OnBomPos(self,e):
+                try:
+                    self.settings = self.Get()
+                    board = pcbnew.GetBoard()
+                    board_fname = board.GetFileName()
+                    board_dir = os.path.dirname(board_fname)
+                    board_basename = (os.path.splitext(os.path.basename(board_fname)))[0]
+                    gerber_dir = '%s/%s' % (board_dir, self.gerberdir.GetValue())
+                    if not os.path.exists(gerber_dir):
+                        os.mkdir(gerber_dir)
+                    # BOM
+                    message('BOM')
+                    bomParam = self.settings.get('BOMFile')
+                    bom_fname = '%s/%s' % (gerber_dir, bomParam.get('Filename').replace('*', board_basename))
+                    bomList = {}
+                    
+                    for fp in board.GetFootprints():
+                        val = fp.GetValue()
+                        if val in bomList:
+                            bomList[val]['ref'] += ',' + fp.GetReference()
+                            bomList[val]['qty'] = bomList[val]['qty'] + 1
+                        else:
+                            bomList[val] = {'val':val, 'ref':fp.GetReference(), 'fp':fp.GetFPIDAsString().split(':')[1], 'qty':1}
+                            bomList[val].update(fp.GetProperties())
+                            bomList[val].update(getsubkey(val))
+
+                    with codecs.open(bom_fname, 'w', 'utf-8') as f:
+                        f.write(bomParam.get('Header') + '\r\n')
+                        rowformat = bomParam.get('Row')
+                        for val in bomList:
+                            row = strreplace(rowformat, bomList[val])
+                            f.write(row + '\r\n')
+
+                    # POS
+                    message('POS')
+                    posParam = self.settings.get('PosFile')
+                    pos_fnameT = '%s/%s' % (gerber_dir, posParam.get('TopFilename').replace('*', board_basename))
+                    pos_fnameB = '%s/%s' % (gerber_dir, posParam.get('BottomFilename').replace('*', board_basename))
+
+                    with codecs.open(pos_fnameT, 'w', 'utf-8') as fT, codecs.open(pos_fnameB, 'w', 'utf-8') as fB:
+                        fT.write(strreplace(posParam.get('Header') + '\r\n', {'side':'top'}))
+                        fB.write(strreplace(posParam.get('Header') + '\r\n', {'side':'bottom'}))
+                        rowformat = posParam.get('Row')
+                        ds = board.GetDesignSettings()
+                        offset = wxPoint(0,0)
+                        # wxPoint in < 6.99, VECTOR2I in >=6.99 
+                        OffsetType = type(board.GetDesignSettings().GetAuxOrigin())
+                        offset = OffsetType(0,0)
+                        if self.settings.get('UseAuxOrigin',False):
+                            bds = board.GetDesignSettings()
+                            if hasattr(bds, 'GetAuxOrigin'):
+                                offset = bds.GetAuxOrigin()
+                            else:
+                                offset = bds.m_AuxOrigin
+                        for fp in board.GetFootprints():
+                            subkey = getsubkey(val)
+                            rotoffs = float(subkey.get('DR') or 0)
+                            xoffs = float(subkey.get('DX') or 0)
+                            yoffs = float(subkey.get('DY') or 0)
+                            ref = fp.GetReference()
+                            val = fp.GetValue()
+                            fpid = fp.GetFPIDAsString().split(':')[1]
+                            x = pcbnew.ToMM(fp.GetX() - offset.x) + xoffs
+                            y = pcbnew.ToMM(fp.GetY() - offset.y) + yoffs
+                            typename = fp.GetTypeName()
+                            rot = (fp.GetOrientationDegrees() + rotoffs) % 360
+                            side = 'top' if fp.GetLayerName() == 'F.Cu' else 'bottom'
+                            side1 = 'T' if fp.GetLayerName() == 'F.Cu' else 'B'
+                            if typename == 'SMD':
+                                dict = {'val':val, 'ref':ref, 'x':x, 'y':y, 'fp':fpid, 'type':typename, 'side':side, 'side1':side1, 'rot':rot}
+                                dict.update(subkey)
+                                row = strreplace(rowformat, dict)
+                                tabs = posParam.get('Tabs')
+                                if tabs:
+                                    row = tabexp(row, tabs)
+                                if side1 == 'T':
+                                    fT.write(row + '\r\n')
+                                else:
+                                    fB.write(row + '\r\n')
+                        footer = posParam.get('Footer')
+                        if(footer):
+                            footerT = strreplace(posParam.get('Footer'), {'side':'top'})
+                            fT.write(footerT)
+                            footerB = strreplace(posParam.get('Footer'), {'side':'bottom'})
+                            fB.write(footerB)
+                    alert(getstr('BOMPOSCOMPLETE') % (bom_fname, pos_fnameT, pos_fnameB), wx.ICON_INFORMATION)
+                except Exception:
+                    s=traceback.format_exc(chain=False)
+                    print(s)
+                    alert(s, wx.ICON_ERROR)
+                e.Skip()
+
             def OnDetail(self,e):
                 if self.detailbtn.GetValue():
-                    sz=Em(65,32)
+                    sz=Em(75,32)
                     self.SetSize(wx.Size(sz[0],sz[1]))
                     self.opt_ZerosFormat.SetPosition(wx.Point(Em(50,23)[0],Em(50,23)[1]))
                 else:
-                    sz=Em(65,12)
+                    sz=Em(75,12)
                     self.SetSize(wx.Size(sz[0],sz[1]))
                 e.Skip()
 
@@ -643,6 +784,8 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                             if os.path.exists(fnam):
                                 f.write(fnam, os.path.basename(fnam))
                     alert(getstr('COMPLETE') % zip_fname, wx.ICON_INFORMATION)
+
+
                 except Exception:
                     s=traceback.format_exc(chain=False)
                     print(s)

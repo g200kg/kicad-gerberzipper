@@ -10,6 +10,8 @@ This is an action script that can be used with pcbnew since KiCad version 5.X (e
 Gerber output for the specified board vendor is performed, and the process of zipping the necessary files is automated with one click.
 
 #### Note
+-  v1.1.0 - Supports BOM/POS file generation
+
 -  v1.0.8 - Workaround for KiCad 7.x
 
 -  v1.0.7 - Fix version display.
@@ -42,7 +44,7 @@ Gerber output for the specified board vendor is performed, and the process of zi
 
 #### Install manually (Without Plugin and Content Manager)
 
-Rename "plugins" folder to "GerberZipper" and place to the subfolder of the KiCad script folder. The script folder depends on the OS. 
+Rename "plugins" folder to "GerberZipper" and place to the subfolder of the KiCad script folder. The script folder depends on the OS. It also varies depending on the version of KiCad, so I recommend installing it in the location opened by selecting "Tools" - "External Plugins" - "Open Plug-in Directory" from the PCB Editor menu.
 
 - Linux:
   > `~/.kicad/scripting/plugins`
@@ -105,6 +107,35 @@ The folder to put the script looks like this:
 
 (The output files have been reviewed, but this includes those that have not been actually ordered and verified.)
 
+#### About BOM/POS files
+
+v1.1.0 supports the creation of BOM (bill of materials) / POS (placement information) files that required when PCBA. For now, only JLCPCB and FusionPCB are supported in CSV or text files as recommended by the board vendor.
+
+BOM/POS files are created in the Gerber creation directory, but are not included in the ZIP file.
+
+The BOM/POS file is just a template, and after creating it, you will need to edit the exact model number or supplier information etc. .
+
+##### JLCPCB example
+
+JLCPCB requires the part number of the parts supplier LCSC in the BOM file, so edit the generated BOM file and add the LCSC part number. Also, the orientation of parts and anchor points may be misaligned between the KiCad footprint and the LCSC footprint, so if there are any irregularities when checking with Gerber Viewer when ordering, you will need to correct them.
+
+GerberZipper makes this task easier by pre-populating KiCad's schematic and footprint libraries. The following additional properties are available for each component in the schematic editor and board editor:
+
+* PN -- Part model number. MFR# of BOM for JLCPCB
+* LCSC -- Model number in LCSC. LCSC# in BOM for JLCPCB
+* DR -- Rotation offset of POS file. Correct the direction of rotation when the orientation of parts does not match
+* DX and DY -- Part position offset. Correct location mismatch in POS file
+
+If you add these properties to the part in advance, they will be automatically modified when the BOM/POS file is generated. However, adding properties to parts itself is quite troublesome. You may find the following articles helpful:
+
+[https://forum.kicad.info/t/need-help-with-adding-field-in-symbol-properties-and-footprint-properties/39106](https://forum.kicad.info/t/ need-help-with-adding-field-in-symbol-properties-and-footprint-properties/39106)
+
+To more easily add information for the BOM/POS file, you can also add additional information to the Value name of the component on the schematic. For example, if you set "LM358DR2G LCSC:C7950" instead of "LM358DR2G" as the part's Value, "C7950" will be entered in the LCSC field when generating the BOM. Also, in the case of "DR", "DX", and "DY", an offset is added to the placement of parts on the POS file.
+
+![](images/20231231_value.png)
+
+* Please note that in this case, the value name of the part will change due to the addition of information, so it will be treated as a different part on the BOM.
+
 #### Modify/Add your own settings 
 
 Settings are written as `.json` files for each board manufacturer in the folder `Manufacturers`. Place the created configuration file here to add options.
@@ -160,6 +191,8 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 指定の基板業者向けのガーバー出力を行い、必要なファイルを ZIP でまとめるまでをワンクリックで自動化します。
 
 #### 注
+-  v1.1.0 - BOM/POSファイルの生成をサポート。
+
 -  v1.0.8 - KiCad 7.x 用のワークアラウンド。
 
 -  v1.0.7 - バージョン表示の修正。
@@ -193,8 +226,9 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 
 #### 手動でインストールする場合
 
-　`plugins` のフォルダーを `GerberZipper` にリネームしてそのまま KiCad のスクリプトフォルダに配置します。スクリプトフォルダは OS によって異なります。
+　`plugins` のフォルダーを `GerberZipper` にリネームしてそのまま KiCad のスクリプトフォルダに配置します。スクリプトフォルダは OS によって異なります。またKiCadのバージョンによっても変化しますので、PCBエディタのメニューから"ツール"-"外部プラグイン"-"プラグインディレクトリを開く" で開いた場所にインストールするのが良いと思います。
 
+以下の場所は最新のものではないかも知れません:
 - Linux:
   > `~/.kicad/scripting/plugins`
 
@@ -259,6 +293,37 @@ Windows の AppData は隠しフォルダになっている事に注意してく
 - PCBWay
 
 (出力されたファイルは確認していますが、実際に発注して確認していないものも含みます)
+
+#### BOM/POS ファイルについて
+
+v1.1.0 で基板業者に部品実装を合わせて発注する場合に必要な BOM(部品表) / POS(配置情報) ファイルの作成をサポートしました。当面サポートしているのは JLCPCB と FusionPCB のみで、基板業者の推奨に合わせて CSV またはテキストファイルで生成します。
+
+BOM/POSファイルはガーバーの作成ディレクトリに作られますが、ZIP ファイルには含まれません。
+
+BOM/POSファイルは雛型であり、作成後、各部品の正確な型番や調達先の情報は自分で編集する事が必要です。POSファイルの配置情報も基板業者が持っている情報に部品の向きやアンカーポイントが正確に合っているかを部品業者が提供するガーバービューワ等を使って自分で確認が必要です。
+
+##### JLCPCB の例
+
+JLCPCB では BOM ファイルに 部品業者 LCSC の部品番号が必要ですので生成した BOM ファイルを編集して LCSC の部品番号を追加します。また KiCad のフットプリントと LCSC のフットプリントで部品の向きやアンカーポイントがずれている場合があるので発注時のガーバービューワの確認でおかしい部分があれば修正が必要です。
+
+GerberZipper はこの作業を軽減するため、KiCad の回路図やフットプリントライブラリにあらかじめ情報を仕込んでおけるようにしています。回路図エディタおよび基板エディタで各部品の追加プロパティとして以下のものが使用できます。
+
+* PN -- 部品の型番。JLCPCB 用の BOM の MFR#
+* LCSC -- LCSC での型番。JLCPCB 用の BOM の LCSC#
+* DR -- POS ファイルの Rotation のオフセット。部品の向きが一致しない場合に回転方向を修正します
+* DX および DY -- 部品位置のオフセット。POS ファイルで位置が一致しない場合に正しい場所に修正します
+
+これらのプロパティをあらかじめ部品に追加しておけば BOM/POS ファイル生成時に自動的に修正します。ただし、部品にプロパティを追加する事自体は結構面倒です。次の記事が参考になると思います:  
+
+[https://forum.kicad.info/t/need-help-with-adding-field-in-symbol-properties-and-footprint-properties/39106](https://forum.kicad.info/t/need-help-with-adding-field-in-symbol-properties-and-footprint-properties/39106)
+
+より簡便に BOM/POS ファイル用の情報を追加するために、回路図上で部品の Value 名に追加情報を入れてしまう事もできます。例えば部品の Value として "LM358DR2G" の代わりに "LM358DR2G LCSC:C7950" とすると、BOM 生成時の LCSC 欄に "C7950" が入ります。また "DR"、"DX"、"DY" の場合は POS ファイル上の部品の配置にオフセットが加わります。
+
+![](images/20231231_value.png)
+
+* なおこの場合、情報の追加によって部品の Value 名が変化しますので BOM 上では異なる部品として扱われる事に注意してください。
+
+
 
 #### 自分で設定を変更/追加する
 

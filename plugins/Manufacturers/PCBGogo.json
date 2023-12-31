@@ -1,0 +1,78 @@
+{
+  "Name":"PCBGOGO",
+  "Description":"Make Gerber-files/Zip for Elecrow,  Upto 8 layers, without Stencil",
+  "URL":"https://www.pcbgogo.com/",
+  "GerberDir":"Gerber",
+  "ZipFilename":"*-PcbGogo.ZIP",
+  "Layers": {
+    "F.Cu":"*-F_Cu.gbr",
+    "B.Cu":"*-B_Cu.gbr",
+    "F.Paste":"*-F_Paste.gbr",
+    "B.Paste":"*-B_Paste.gbr",
+    "F.SilkS":"*-F_SilkS.gbr",
+    "B.SilkS":"*-B_SilkS.gbr",
+    "F.Mask":"*-F_Mask.gbr",
+    "B.Mask":"*-B_Mask.gbr",
+    "Edge.Cuts":"*-Edge_Cuts.gbr",
+    "In1.Cu":"*-In1_Cu.gbr",
+    "In2.Cu":"*-In2_Cu.gbr",
+    "In3.Cu":"*-In3_Cu.gbr",
+    "In4.Cu":"*-In4_Cu.gbr",
+    "In5.Cu":"*-In5_Cu.gbr",
+    "In6.Cu":"*-In6_Cu.gbr"
+  },
+  "PlotBorderAndTitle":false,
+  "PlotFootprintValues":true,
+  "PlotFootprintReferences":true,
+  "ForcePlotInvisible":false,
+  "ExcludeEdgeLayer":true,
+  "ExcludePadsFromSilk":true,
+  "DoNotTentVias":false,
+  "UseAuxOrigin":true,
+  "LineWidth":0.1,
+
+  "CoodinateFormat46":true,
+  "SubtractMaskFromSilk":true,
+  "UseExtendedX2format": false,
+  "IncludeNetlistInfo":false,
+
+  "Drill": {
+    "Drill":"*-PTH.drl",
+    "DrillMap":"",
+    "NPTH":"*-NPTH.drl",
+    "NPTHMap":"",
+    "Report":""
+  },
+  "MirrorYAxis":false,
+  "MinimalHeader":false,
+  "MergePTHandNPTH":false,
+  "RouteModeForOvalHoles":true,
+  "DrillUnitMM":true,
+  "ZerosFormat":{
+    "DecimalFormat":true,
+    "SuppressLeading":false,
+    "SuppressTrailing":false,
+    "KeepZeros":false
+  },
+  "MapFileFormat":{
+    "HPGL":false,
+    "PostScript":true,
+    "Gerber":false,
+    "DXF":false,
+    "SVG":false,
+    "PDF":false
+  },
+  "OptionalFiles":[],
+  "BOMFile":{
+    "Filename":"*-PCBGOGO-BOM.csv",
+    "Header": "Quantity, Designator, Description, Value, Footprint, Manufacturer, Part Number",
+    "Row": "\"${qty}\",\"${ref}\",\"${val}\",\"${val}\",\"${fp}\",\"\",\"${PN}\""
+  },
+  "PosFile":{
+    "TopFilename":"*-PCBGOGO-POS-Top.txt",
+    "BottomFilename":"*-PCBGOGO-POS-Bottom.txt",
+    "Tabs":[11,23,12,28,14,14,9,80],
+    "Header": "Designator Comment                Layer       Footprint                   Center-X(mm)  Center-Y(mm)  Rotation Description",
+    "Row": "${ref}\t\"${val}\"\t${side}\t${fp}\t${x}\t${y}\t${rot}\t\"${PN}\""
+  }
+}

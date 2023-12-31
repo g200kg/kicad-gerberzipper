@@ -6,8 +6,10 @@
   "ZIPFNAME":"Zip ファイル名",
   "DESCRIPTION":"説明",
   "EXEC":"ガーバー/ZIPファイル作成",
+  "BOMPOSEXEC":"BOM/POSファイル作成",
   "DETAIL":"設定の詳細を表示",
   "CLOSE":"閉じる",
   "DESC2":"ここでの変更は一時的なものです。恒久的に変更したい場合は対応するjsonファイルを編集してください。",
-  "COMPLETE":"GerberZipper 完了。 \n\n 出力ファイル : %s"
+  "COMPLETE":"GerberZipper 完了。 \n\n 出力ファイル : %s",
+  "BOMPOSCOMPLETE":"BOM/POSファイル作成完了 \n\n BOM file : %s \n POS-Top file : %s \n POS-Bottom file : %s"
 }

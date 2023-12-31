@@ -62,5 +62,16 @@
     "SVG":false,
     "PDF":false
   },
-  "OptionalFiles":[]
+  "OptionalFiles":[],
+  "BOMFile":{
+    "Filename":"*-JLCPCB-BOM.csv",
+    "Header": "Comment, Designator, Footprint, JLCPCB Part#, MFR.Part#, Qty",
+    "Row": "\"${val}\",\"${ref}\",\"${fp}\",\"${LCSC}\",\"${PN}\",\"${qty}\""
+  },
+  "PosFile":{
+    "TopFilename":"*-JLCPCB-POS-Top.csv",
+    "BottomFilename":"*-JLCPCB-POS-Bottom.csv",
+    "Header": "Designator, Mid X, Mid Y, Layer, Rotation, Package, Type",
+    "Row": "\"${ref}\",\"${x}\",\"${y}\",${side1},${rot},\"${fp}\",\"${type}\""
+  }
 }
