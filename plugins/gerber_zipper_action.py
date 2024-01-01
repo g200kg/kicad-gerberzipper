@@ -20,7 +20,7 @@ import inspect
 import traceback
 import re
 
-version = "1.1.2"
+version = "1.1.3"
 strtab = {}
 
 layer_list = [
@@ -118,6 +118,8 @@ default_settings = {
   "OptionalFiles":[],
   "BOMFile":{
     "Filename":"*-BOM.csv",
+    "THT":False,
+    "SMD":True,
     "Header":"Comment, Designator, Footprint, Part#, Qty",
     "Row": "\"${val}\",\"${ref}\",\"${fp}\",\"${PN}\",\"${qty}\"",
     "Footer":""
@@ -125,6 +127,8 @@ default_settings = {
   "PosFile":{
     "TopFilename":"*-POS-Top.csv",
     "BottomFilename":"*-POS-Bottom.csv",
+    "THT":False,
+    "SMD":True,
     "Header": "Designator, PosX, PosY, Side, Rotation, Package, Type",
     "Row": "\"${ref}\",\"${x}\",\"${y}\",${side},${rot},\"${fp}\",\"${type}\"",
     "Footer":""
@@ -310,7 +314,9 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     print (fname)
                     strtab[fname] = json.load(codecs.open(fpath, 'r', 'utf-8'))
                 InitEm()
-                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=Em(75,12),
+
+                self.szPanel = [Em(75,12), Em(75,40)]
+                wx.Dialog.__init__(self, parent, id=-1, title='Gerber-Zipper '+version, size=self.szPanel[0],
                                    style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
                 self.panel = wx.Panel(self)
                 icon=wx.Icon(self.icon_file_name)
@@ -337,17 +343,18 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.execbtn = wx.Button(self.panel, wx.ID_ANY, getstr('EXEC'),size=Em(15,1),pos=Em(18,8.5))
                 self.bomposbtn = wx.Button(self.panel, wx.ID_ANY, getstr('BOMPOSEXEC'),size=Em(15,1),pos=Em(34,8.5))
                 self.clsbtn = wx.Button(self.panel, wx.ID_ANY, getstr('CLOSE'),size=Em(15,1),pos=Em(50,8.5))
-                wx.StaticLine(self.panel, wx.ID_ANY, size=(Em(65,1)[0],2), pos=Em(1,10.5))
                 self.manufacturers.Bind(wx.EVT_COMBOBOX, self.OnManufacturers)
+
                 self.clsbtn.Bind(wx.EVT_BUTTON, self.OnClose)
                 self.execbtn.Bind(wx.EVT_BUTTON, self.OnExec)
                 self.bomposbtn.Bind(wx.EVT_BUTTON, self.OnBomPos)
                 self.detailbtn.Bind(wx.EVT_TOGGLEBUTTON, self.OnDetail)
+                wx.StaticText(self.panel, wx.ID_ANY, 'ZIP contents', size=Em(12,1), pos=Em(1, 10))
+                wx.StaticLine(self.panel, wx.ID_ANY, size=(Em(56,1)[0],2), pos=Em(9,10.5))
 
                 wx.StaticBox(self.panel, wx.ID_ANY,'Gerber', pos=Em(2,11), size=Em(40,15))
                 wx.StaticBox(self.panel, wx.ID_ANY,'Other', pos=Em(2,26), size=Em(64,3))
                 wx.StaticBox(self.panel, wx.ID_ANY,'Drill', pos=Em(43,11), size=Em(20,15))
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=Em(2,29))
 
 #                self.panel = panel
                 self.layer = wx.grid.Grid(self.panel, wx.ID_ANY, size=Em(18,13), pos=Em(3,12))
@@ -411,6 +418,17 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 self.opt_OptionalFile = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(12,1), pos=Em(15,27.5))
                 self.opt_OptionalContent = wx.TextCtrl(self.panel, wx.ID_ANY, '', size=Em(37,1), pos=Em(28,27.5))
 
+                wx.StaticText(self.panel, wx.ID_ANY, 'BOM/POS', size=Em(7,1), pos=Em(1, 29.5))
+                wx.StaticLine(self.panel, wx.ID_ANY, size=(Em(60,1)[0],2), pos=Em(5,30))
+
+                self.opt_BOMTHT = wx.CheckBox(self.panel, wx.ID_ANY, 'BOM THT', pos=Em(5,31))
+                self.opt_BOMSMD = wx.CheckBox(self.panel, wx.ID_ANY, 'BOM SMD', pos=Em(5,32))
+                self.opt_PosTHT = wx.CheckBox(self.panel, wx.ID_ANY, 'POS THT', pos=Em(15,31))
+                self.opt_PosSMD = wx.CheckBox(self.panel, wx.ID_ANY, 'POS SMD', pos=Em(15,32))
+
+#                wx.StaticLine(self.panel, wx.ID_ANY, size=(Em(65,1)[0],2), pos=Em(1,30))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=Em(2,34))
+
 #                self.editor = Editor(self.panel)
                 self.Select(self.plugin_settings_data.get("default",0))
 
@@ -466,6 +484,12 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     files=[{'name':'','content':''}]
                 self.opt_OptionalFile.SetValue(files[0]['name'])
                 self.opt_OptionalContent.SetValue(files[0]['content'])
+                bom = self.settings.get('BOMFile',{})
+                pos = self.settings.get('PosFile',{})
+                self.opt_BOMTHT.SetValue(1 if bom.get('THT',False) else 0)
+                self.opt_BOMSMD.SetValue(1 if bom.get('SMD',True) else 0)
+                self.opt_PosTHT.SetValue(1 if pos.get('THT',False) else 0)
+                self.opt_PosSMD.SetValue(1 if pos.get('SMD',True) else 0)
 
             def Get(self):
                 l = self.settings.get('Layers',{})
@@ -514,6 +538,12 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 map['PDF'] = i == 5
                 f = {'name':self.opt_OptionalFile.GetValue(), 'content':self.opt_OptionalContent.GetValue()}
                 self.settings['OptionalFiles'] = [f]
+                bom = self.settings['BOMFile']
+                pos = self.settings['PosFile']
+                bom['THT'] = self.opt_BOMTHT.GetValue()
+                bom['SMD'] = self.opt_BOMSMD.GetValue()
+                pos['THT'] = self.opt_PosTHT.GetValue()
+                pos['SMD'] = self.opt_PosSMD.GetValue()
                 return self.settings
 
             def Select(self,n):
@@ -553,13 +583,15 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     
                     for fp in board.GetFootprints():
                         val = fp.GetValue()
-                        if val in bomList:
-                            bomList[val]['ref'] += ',' + fp.GetReference()
-                            bomList[val]['qty'] = bomList[val]['qty'] + 1
-                        else:
-                            bomList[val] = {'val':val, 'ref':fp.GetReference(), 'fp':fp.GetFPIDAsString().split(':')[1], 'qty':1}
-                            bomList[val].update(fp.GetProperties())
-                            bomList[val].update(getsubkey(val))
+                        typename = fp.GetTypeName()
+                        if (typename == 'SMD' and self.settings.get('BOMFile',{}).get('SMD')) or (typename != 'SMD' and self.settings.get('BOMFile',{}).get('THT')):
+                            if val in bomList:
+                                bomList[val]['ref'] += ',' + fp.GetReference()
+                                bomList[val]['qty'] = bomList[val]['qty'] + 1
+                            else:
+                                bomList[val] = {'val':val, 'ref':fp.GetReference(), 'fp':fp.GetFPIDAsString().split(':')[1], 'qty':1}
+                                bomList[val].update(fp.GetProperties())
+                                bomList[val].update(getsubkey(val))
                     with codecs.open(bom_fname, 'w', 'utf-8') as f:
                         f.write(bomParam.get('Header') + '\r\n')
                         rowformat = bomParam.get('Row')
@@ -589,12 +621,12 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                             else:
                                 offset = bds.m_AuxOrigin
                         for fp in board.GetFootprints():
+                            ref = fp.GetReference()
+                            val = fp.GetValue()
                             subkey = getsubkey(val)
                             rotoffs = float(subkey.get('DR') or 0)
                             xoffs = float(subkey.get('DX') or 0)
                             yoffs = float(subkey.get('DY') or 0)
-                            ref = fp.GetReference()
-                            val = fp.GetValue()
                             fpid = fp.GetFPIDAsString().split(':')[1]
                             x = pcbnew.ToMM(fp.GetX() - offset.x) + xoffs
                             y = pcbnew.ToMM(fp.GetY() - offset.y) + yoffs
@@ -602,7 +634,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                             rot = (fp.GetOrientationDegrees() + rotoffs) % 360
                             side = 'top' if fp.GetLayerName() == 'F.Cu' else 'bottom'
                             side1 = 'T' if fp.GetLayerName() == 'F.Cu' else 'B'
-                            if typename == 'SMD':
+                            if (typename == 'SMD' and self.settings.get('PosFile',{}).get('SMD')) or (typename != 'SMD' and self.settings.get('PosFile',{}).get('THT')):
                                 dict = {'val':val, 'ref':ref, 'x':x, 'y':y, 'fp':fpid, 'type':typename, 'side':side, 'side1':side1, 'rot':rot}
                                 dict.update(subkey)
                                 row = strreplace(rowformat, dict)
@@ -628,12 +660,10 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
 
             def OnDetail(self,e):
                 if self.detailbtn.GetValue():
-                    sz=Em(75,32)
-                    self.SetSize(wx.Size(sz[0],sz[1]))
+                    self.SetSize(wx.Size(self.szPanel[1][0], self.szPanel[1][1]))
                     self.opt_ZerosFormat.SetPosition(wx.Point(Em(50,23)[0],Em(50,23)[1]))
                 else:
-                    sz=Em(75,12)
-                    self.SetSize(wx.Size(sz[0],sz[1]))
+                    self.SetSize(wx.Size(self.szPanel[0][0], self.szPanel[0][1]))
                 e.Skip()
 
             def OnClose(self,e):
