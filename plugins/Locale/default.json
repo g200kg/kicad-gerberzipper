@@ -10,6 +10,8 @@
   "DETAIL":"Show Settings Details",
   "CLOSE":"Close",
   "DESC2":"The changes here are temporary. If you want to change it permanently edit the corresponding json file",
-  "COMPLETE":"GerberZipper Complete. \n\n Output file : %s",
-  "BOMPOSCOMPLETE":"BOM/POS File Complete. \n\n BOM file : %s \n POS-Top file : %s \n POS-Bottom file : %s"
+  "COMPLETE":"Gerber and Zip File Complete. \n\n Output file : %s",
+  "BOMFILE":"BOM File",
+  "POSFILE":"Pos File",
+  "BOMPOSCOMPLETE":"BOM/POS File Complete. \n\n BOM-Top file    : %s\n BOM-Bottom file : %s\n POS-Top file    : %s \n POS-Bottom file : %s"
 }

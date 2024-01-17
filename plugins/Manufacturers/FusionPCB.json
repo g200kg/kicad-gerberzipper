@@ -63,14 +63,19 @@
     "PDF":false
   },
   "OptionalFiles":[],
-  "BOMFile":{
-    "Filename":"*-FusionPCB-BOM.csv",
-    "Header": "Part/Designator, Manufacturer Part Number/Seeed SKU, Quantity, Link",
+  "BomFile":{
+    "TopFilename":"*-FusionPCB-BOM-Top.xlsx",
+    "BottomFilename":"*-FusionPCB-BOM-Bottom.xlsx",
+    "MergeSide":false,
+    "IncludeTHT":false,
+    "Header": "\"Part/Designator\",\"Manufacturer Part Number/Seeed SKU\",\"Quantity\",\"Link\"",
     "Row": "\"${ref}\",\"${PN}\",${qty},\"${URL}\""
   },
   "PosFile":{
     "TopFilename":"*-FusionPCB-POS-Top.POS",
     "BottomFilename":"*-FusionPCB-POS-Bottom.POS",
+    "MergeSide":false,
+    "IncludeTHT":false,
     "Tabs":[8,22,50,8,8,8,8,8],
     "Header": "### Module positions\r\n## Unit = mm,Angle = deg.\r\n## Side:${side}\r\n# Ref   Val                   Package                                           PosX    PosY    Rot     Side    Type",
     "Row": "${ref}\t${val}\t${fp}\t${x}\t${y}\t${rot}\t${side}\t${type}",

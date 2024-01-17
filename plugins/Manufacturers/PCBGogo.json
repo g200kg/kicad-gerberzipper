@@ -63,16 +63,17 @@
     "PDF":false
   },
   "OptionalFiles":[],
-  "BOMFile":{
-    "Filename":"*-PCBGOGO-BOM.csv",
-    "Header": "Quantity, Designator, Description, Value, Footprint, Manufacturer, Part Number",
-    "Row": "\"${qty}\",\"${ref}\",\"${val}\",\"${val}\",\"${fp}\",\"\",\"${PN}\""
+  "BomFile":{
+    "TopFilename":"*-PCBGOGO-BOM-Top.csv",
+    "BottomFilename":"*-PCBGOGO-BOM-Bottom.csv",
+    "Header": "\"Quantity\",\"Designator\",\"Description\",\"Value\",\"Footprint\",\"Manufacturer\",\"Part Number\"",
+    "Row": "${qty},\"${ref}\",\"${val}\",\"${val}\",\"${fp}\",\"\",\"${PN}\""
   },
   "PosFile":{
     "TopFilename":"*-PCBGOGO-POS-Top.txt",
     "BottomFilename":"*-PCBGOGO-POS-Bottom.txt",
     "Tabs":[11,23,12,28,14,14,9,80],
-    "Header": "Designator Comment                Layer       Footprint                   Center-X(mm)  Center-Y(mm)  Rotation Description",
-    "Row": "${ref}\t\"${val}\"\t${side}\t${fp}\t${x}\t${y}\t${rot}\t\"${PN}\""
+    "Header": "Designator\tComment\tLayer\tFootprint\tCenter-X(mm)\tCenter-Y(mm)\tRotation\tDescription",
+    "Row": "${ref}\t${val}\t${side}\t${fp}\t${x}\t${y}\t${rot}\t${PN}"
   }
 }

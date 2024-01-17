@@ -1,5 +1,6 @@
 temp/
 work/
+work*
 
 #npm
 package.json

@@ -20,7 +20,7 @@ import inspect
 import traceback
 import re
 
-version = "1.1.3"
+version = "1.1.4"
 strtab = {}
 
 layer_list = [
@@ -116,33 +116,67 @@ default_settings = {
     "PDF":False
   },
   "OptionalFiles":[],
-  "BOMFile":{
-    "Filename":"*-BOM.csv",
-    "THT":False,
-    "SMD":True,
+  "BomFile":{
+    "TopFilename":"*-BOM-Top.csv",
+    "BottomFilename":"*-BOM-Bottom.csv",
+    "MergeSide":False,
+    "IncludeTHT":False,
     "Header":"Comment, Designator, Footprint, Part#, Qty",
-    "Row": "\"${val}\",\"${ref}\",\"${fp}\",\"${PN}\",\"${qty}\"",
+    "Row": "\"${val}\",\"${ref}\",\"${fp}\",\"${PN}\",${qty}",
     "Footer":""
   },
   "PosFile":{
     "TopFilename":"*-POS-Top.csv",
     "BottomFilename":"*-POS-Bottom.csv",
-    "THT":False,
-    "SMD":True,
+    "MergeSide":False,
+    "IncludeTHT":False,
     "Header": "Designator, PosX, PosY, Side, Rotation, Package, Type",
-    "Row": "\"${ref}\",\"${x}\",\"${y}\",${side},${rot},\"${fp}\",\"${type}\"",
+    "Row": "\"${ref}\",${x},${y},\"${side}\",${rot},\"${fp}\",\"${type}\"",
     "Footer":""
   }
 }
 
 
+
 chsize = (10,20)
+
+
 
 def message(s):
     print('GerberZipper: '+s)
 
+class Alert(wx.Dialog):
+    def __init__(self):
+        wx.Dialog.__init__(self, None, -1, 'Gerber Zipper', size=(800,200))
+        self.maintext = wx.StaticText(self, wx.ID_ANY, '', pos=(60, 10))
+        self.subtext = wx.StaticText(self, wx.ID_ANY, '', pos=(30, 30))
+        self.mainfont = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+        self.maintext.SetFont(self.mainfont)
+        self.maintext.SetForegroundColour(wx.Colour(0,0,128))
+        button = wx.Button(self, wx.ID_OK, "OK", size=(120,20), pos=(20, 120))
+        button.SetDefault()
+        bmp = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_CMN_DIALOG)
+        self.icon = wx.StaticBitmap(self, wx.ID_ANY, bmp, pos=(10,0))
+        sizer = wx.BoxSizer(wx.VERTICAL)
+    def setText(self, txt):
+        txts = txt.split('\n')
+        maintxt = txts.pop(0)
+        subtxt = '\n'.join(txts)
+        self.maintext.SetLabel(maintxt)
+        self.subtext.SetLabel(subtxt)
+
+def alert2(s, icon=0):
+    dialog = Alert()
+    dialog.setText(s)
+    wx.Bell()
+    r = dialog.ShowModal()
+    dialog.Destroy()
+    return r
+
 def alert(s, icon=0):
-    wx.MessageBox(s, 'Gerber Zipper', wx.OK|icon)
+    dialog = wx.MessageDialog(None, s, 'Gerber Zipper')
+    r = dialog.ShowModal()
+    return r
 
 def InitEm():
     global chsize
@@ -198,8 +232,6 @@ def refill(board):
     except:
         message('Refill Failed')
 
-    
-
 def getsubkey(s):
     l = s.split(' ')
     subkeys = {}
@@ -232,47 +264,116 @@ def strreplace(s,d):
     s = re.sub('\${[a-zA-Z]*}', '', s)
     return s
 
+def isNum(x):
+    try:
+        float(x)
+    except ValueError:
+        return False
+    else:
+        return True
+
 class tableFile():
     def __init__(self, fn):
         self.row = 0
-        self.type = 'txt'
+        self.fname = fn
+        self.tabs = []
+        self.xlsxReady = 1
         if fn.endswith('.csv'):
             self.type = 'csv'
-        self.fname = fn
-        self.f = open(fn, mode='w', encoding='utf-8')
+            self.f = open(fn, mode='w', encoding='utf-8')
+        elif fn.endswith('.xlsx'):
+            self.xlsxReady = 1
+            try:
+                import xlsxwriter
+            except ModuleNotFoundError:
+                self.xlsxReady = 0
+            self.type = 'xlsx'
+            if self.xlsxReady == 0:
+                self.type = 'csv'
+                self.fname = self.fname[0:-5] + '.csv'
+                self.f = open(self.fname, mode='w', encoding='utf-8')
+            else:
+                self.xlsx =xlsxwriter.Workbook(self.fname)
+                self.sheet = self.xlsx.add_worksheet('Sheet1')
+                self.HeaderFormat = self.xlsx.add_format()
+                self.HeaderFormat.set_bold()
+                self.HeaderFormat.set_bg_color('yellow')
+                self.HeaderFormat.set_align('center')
+                self.HeaderFormat.set_border(1)
+                self.BodyFormat = self.xlsx.add_format()
+                self.BodyFormat.set_text_wrap()
+                self.BodyFormat.set_border(1)
+                self.BodyFormat.set_align('center')
+        else:
+            self.type = 'txt'
+            self.f = open(fn, mode='w', encoding='utf-8')
+        self.ini=0
     
     def setTabs(self, tabs):
         self.tabs = tabs
+        if self.type == 'xlsx':
+            for i in range(len(self.tabs)):
+                self.sheet.set_column(i, i, float(self.tabs[i]))
 
-    def addLine(self, line):
-        self.f.write(line + '\n')
-        self.row += 1
-    
-    def addRow(self, cells):
-        if self.type == 'csv':
-            self.f.write(','.join(cells) + '\n')
-        else:
+    def deleteSubkeys(self, str):
+        s = str.strip('"').split(' ')
+        s2 = ''
+        for ss in s:
+            if ':' not in ss:
+                if s2 != '':
+                    s2 += ' '
+                s2 += ss
+        return s2
+
+    def addLine(self, line, dic, format):
+        if line == None:
+            return
+        if self.type == 'xlsx':
+            cells = line.split(',')
+            res = []
+            for cell in cells:
+                res.append(strreplace(cell, dic))
+            if format == 'Header':
+                font = self.HeaderFormat
+            else:
+                font = self.BodyFormat
             col = 0
-            rtxt = ''
-            tabcnt = 0
-            nexttab = self.tabs[0]
-            for txt in cells:
-                if tabcnt < len(self.tabs):
-                    lenmax = nexttab - col - 1
-                    txt = txt[:lenmax]
-                    rtxt += txt
-                    col += len(txt)
-                    spclen = nexttab - col
-                    rtxt += ' ' * spclen
-                    col += spclen
+            for cell in res:
+                if isNum(cell[0]):
+                    self.sheet.write(self.row, col, float(cell), font)
+                else:
+                    s = deleteSubkeys(cell)
+                    self.sheet.write(self.row, col, s, font)
+                col += 1
+        elif self.type == 'csv':
+            cells = line.split(',')
+            res = []
+            for cell in cells:
+                res.append(strreplace(cell, dic))
+            self.f.write(','.join(res) + '\n')
+        else:
+            if format == 'Header':
+                self.f.write(line + '\n')
+            else:
+                cells = line.split('\t')
+                res = []
+                tabcnt = 0
+                for cell in cells:
+                    r = strreplace(cell, dic)
+                    r2 = r
+                    if(self.tabs):
+                        tablen = self.tabs[tabcnt]
+                        r2 = (r + ' ' * tablen)[0:tablen-1]
+                    res.append(r2)
                     tabcnt += 1
-                    if(tabcnt < len(self.tabs)):
-                        nexttab += self.tabs[tabcnt]
-            self.f.write(rtxt + '\n')
+                self.f.write(' '.join(res) + '\n')
         self.row += 1
-    
+
     def close(self):
-        self.f.close()
+        if self.type == 'xlsx':
+            self.xlsx.close()
+        else:
+            self.f.close()
 
 class GerberZipperAction( pcbnew.ActionPlugin ):
     def defaults( self ):
@@ -280,7 +381,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
         self.category = "Plot"
         self.description = "Make Gerber-Zip-file for selected PCB manufacturers"
         self.show_toolbar_button = True
-        self.icon_file_name = os.path.join(os.path.dirname(__file__), 'icon.png')
+        self.icon_file_name = os.path.join(os.path.dirname(__file__), 'Assets/icon.png')
 
     def Run(self):
         class Dialog(wx.Dialog):
@@ -295,7 +396,7 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     self.plugin_settings_data["default"] = 0
                     json.dump(self.plugin_settings_data, open(settings_fname, "w"))
 
-                self.icon_file_name = os.path.join(os.path.dirname(__file__), 'icon.png')
+                self.icon_file_name = os.path.join(os.path.dirname(__file__), 'Assets/icon.png')
                 self.manufacturers_dir = os.path.join(os.path.dirname(__file__), 'Manufacturers')
                 manufacturers_list = glob.glob('%s/*.json' % self.manufacturers_dir)
                 self.json_data = []
@@ -421,19 +522,47 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 wx.StaticText(self.panel, wx.ID_ANY, 'BOM/POS', size=Em(7,1), pos=Em(1, 29.5))
                 wx.StaticLine(self.panel, wx.ID_ANY, size=(Em(60,1)[0],2), pos=Em(5,30))
 
-                self.opt_BOMTHT = wx.CheckBox(self.panel, wx.ID_ANY, 'BOM THT', pos=Em(5,31))
-                self.opt_BOMSMD = wx.CheckBox(self.panel, wx.ID_ANY, 'BOM SMD', pos=Em(5,32))
-                self.opt_PosTHT = wx.CheckBox(self.panel, wx.ID_ANY, 'POS THT', pos=Em(15,31))
-                self.opt_PosSMD = wx.CheckBox(self.panel, wx.ID_ANY, 'POS SMD', pos=Em(15,32))
+                self.bompos = wx.grid.Grid(self.panel, wx.ID_ANY, size=Em(27,5,1,0), pos=Em(3,31))
+                self.bompos.DisableDragColSize()
+                self.bompos.DisableDragRowSize()
+                self.bompos.CreateGrid(5, 2)
+                self.bompos.DisableDragGridSize()
+                self.bompos.ShowScrollbars(wx.SHOW_SB_NEVER,wx.SHOW_SB_NEVER)
+                self.bompos.SetColLabelValue(0, 'BOM/POS')
+                self.bompos.SetColLabelValue(1, 'Filename')
+                self.bompos.SetRowLabelSize(1)
+                self.bompos.SetColSize(0, Em(9,1)[0])
+                self.bompos.SetColSize(1, Em(18,1)[0])
+                bomposfile = ['Bom-Top', 'Bom-Bottom', 'Pos-Top', 'Pos-Bottom']
+                self.bompos.SetColLabelSize(Em(1,1)[1])
+                for i in range(len(bomposfile)):
+                    self.bompos.SetCellValue(i, 0, bomposfile[i])
+                    self.bompos.SetReadOnly(i, 0, True)
+                    self.bompos.SetRowSize(i, Em(1,1)[1])
+                self.opt_BomMergeSide = wx.CheckBox(self.panel, wx.ID_ANY, 'BomMergeSide', pos=Em(31,32))
+                self.opt_BomIncludeTHT = wx.CheckBox(self.panel, wx.ID_ANY, 'BomIncludeTHT', pos=Em(31,33))
+                self.opt_PosMergeSide = wx.CheckBox(self.panel, wx.ID_ANY, 'PosMergeSide', pos=Em(31,34))
+                self.opt_PosIncludeTHT = wx.CheckBox(self.panel, wx.ID_ANY, 'PosIncludeTHT', pos=Em(31,35))
+
+#                wx.StaticText(self.panel, wx.ID_ANY, getstr('BOMFILE'),size=Em(14,1), pos=Em(1,31))
+#                self.bomfile = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=Em(30,1), pos=Em(16,31))
+#                wx.StaticText(self.panel, wx.ID_ANY, getstr('POSFILE'),size=Em(14,1), pos=Em(1,32))
+#                self.posfile = wx.TextCtrl(self.panel, wx.ID_ANY, '',size=Em(30,1), pos=Em(16,32))
+
+#                self.opt_BOMTHT = wx.CheckBox(self.panel, wx.ID_ANY, 'BOM THT', pos=Em(35,33))
+#                self.opt_BOMSMD = wx.CheckBox(self.panel, wx.ID_ANY, 'BOM SMD', pos=Em(35,34))
+#                self.opt_PosTHT = wx.CheckBox(self.panel, wx.ID_ANY, 'POS THT', pos=Em(45,33))
+#                self.opt_PosSMD = wx.CheckBox(self.panel, wx.ID_ANY, 'POS SMD', pos=Em(45,34))
 
 #                wx.StaticLine(self.panel, wx.ID_ANY, size=(Em(65,1)[0],2), pos=Em(1,30))
-                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=Em(2,34))
+                wx.StaticText(self.panel, wx.ID_ANY, getstr('DESC2'), pos=Em(2,36.5))
 
 #                self.editor = Editor(self.panel)
                 self.Select(self.plugin_settings_data.get("default",0))
 
             def Set(self, settings):
                 self.settings=dict(default_settings,**settings)
+
                 l = self.settings.get('Layers',{})
                 for i in range(self.layer.GetNumberRows()):
                     k = self.layer.GetCellValue(i, 0)
@@ -448,6 +577,12 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                         self.drill.SetCellValue(i, 1, l.get(k))
                     else:
                         self.drill.SetCellValue(i, 1, '')
+
+                self.bompos.SetCellValue(0, 1, self.settings.get('BomFile',{}).get('TopFilename'))
+                self.bompos.SetCellValue(1, 1, self.settings.get('BomFile',{}).get('BottomFilename'))
+                self.bompos.SetCellValue(2, 1, self.settings.get('PosFile',{}).get('TopFilename'))
+                self.bompos.SetCellValue(3, 1, self.settings.get('PosFile',{}).get('BottomFilename'))
+
                 self.opt_PlotBorderAndTitle.SetValue(self.settings.get('PlotBorderAndTitle',False))
                 self.opt_PlotFootprintValues.SetValue(self.settings.get('PlotFootprintValues',True))
                 self.opt_PlotFootprintReferences.SetValue(self.settings.get('PlotFootprintReferences',True))
@@ -484,12 +619,16 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     files=[{'name':'','content':''}]
                 self.opt_OptionalFile.SetValue(files[0]['name'])
                 self.opt_OptionalContent.SetValue(files[0]['content'])
-                bom = self.settings.get('BOMFile',{})
+                bom = self.settings.get('BomFile',{})
                 pos = self.settings.get('PosFile',{})
-                self.opt_BOMTHT.SetValue(1 if bom.get('THT',False) else 0)
-                self.opt_BOMSMD.SetValue(1 if bom.get('SMD',True) else 0)
-                self.opt_PosTHT.SetValue(1 if pos.get('THT',False) else 0)
-                self.opt_PosSMD.SetValue(1 if pos.get('SMD',True) else 0)
+                self.opt_BomMergeSide.SetValue(1 if bom.get('MergeSide',False) else 0)
+                self.opt_BomIncludeTHT.SetValue(1 if bom.get('IncludeTHT',False) else 0)
+                self.opt_PosMergeSide.SetValue(1 if pos.get('MergeSide',False) else 0)
+                self.opt_PosIncludeTHT.SetValue(1 if pos.get('IncludeTHT',False) else 0)
+#                self.opt_BOMTHT.SetValue(1 if bom.get('THT',False) else 0)
+#                self.opt_BOMSMD.SetValue(1 if bom.get('SMD',True) else 0)
+#                self.opt_PosTHT.SetValue(1 if pos.get('THT',False) else 0)
+#                self.opt_PosSMD.SetValue(1 if pos.get('SMD',True) else 0)
 
             def Get(self):
                 l = self.settings.get('Layers',{})
@@ -538,12 +677,22 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                 map['PDF'] = i == 5
                 f = {'name':self.opt_OptionalFile.GetValue(), 'content':self.opt_OptionalContent.GetValue()}
                 self.settings['OptionalFiles'] = [f]
-                bom = self.settings['BOMFile']
+                bom = self.settings['BomFile']
                 pos = self.settings['PosFile']
-                bom['THT'] = self.opt_BOMTHT.GetValue()
-                bom['SMD'] = self.opt_BOMSMD.GetValue()
-                pos['THT'] = self.opt_PosTHT.GetValue()
-                pos['SMD'] = self.opt_PosSMD.GetValue()
+#                self.opt_BomMergeSide = wx.CheckBox(self.panel, wx.ID_ANY, 'BomMergeSide', pos=Em(31,32))
+                bom['TopFilename'] = self.bompos.GetCellValue(0, 1)
+                bom['BottomFilename'] = self.bompos.GetCellValue(1, 1)
+                pos['TopFilename'] = self.bompos.GetCellValue(2, 1)
+                pos['BottomFilename'] = self.bompos.GetCellValue(3, 1)
+                bom['MergeSide'] = self.opt_BomMergeSide.GetValue()
+                bom['IncludeTHT'] = self.opt_BomIncludeTHT.GetValue()
+                pos['MergeSide'] = self.opt_PosMergeSide.GetValue()
+                pos['IncludeTHT'] = self.opt_PosIncludeTHT.GetValue()
+
+#                bom['THT'] = self.opt_BOMTHT.GetValue()
+#                bom['SMD'] = self.opt_BOMSMD.GetValue()
+#                pos['THT'] = self.opt_PosTHT.GetValue()
+#                pos['SMD'] = self.opt_PosSMD.GetValue()
                 return self.settings
 
             def Select(self,n):
@@ -575,83 +724,123 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     gerber_dir = '%s/%s' % (board_dir, self.gerberdir.GetValue())
                     if not os.path.exists(gerber_dir):
                         os.mkdir(gerber_dir)
+
                     # BOM
                     message('BOM')
-                    bomParam = self.settings.get('BOMFile')
-                    bom_fname = '%s/%s' % (gerber_dir, bomParam.get('Filename').replace('*', board_basename))
-                    bomList = {}
-                    
+                    bomParam = self.settings.get('BomFile',{})
+                    bom_fnameT = ''
+                    bom_fnameB = ''
+                    fnameT = bomParam.get('TopFilename','')
+                    fnameB = bomParam.get('BottomFilename','')
+                    if len(fnameT)>0:
+                        bom_fnameT = '%s/%s' % (gerber_dir, fnameT.replace('*', board_basename))
+                    if len(fnameB)>0 and not bomParam.get('MergeSide'):
+                        bom_fnameB = '%s/%s' % (gerber_dir, fnameB.replace('*', board_basename))
+                    bomList = [{},{}]
                     for fp in board.GetFootprints():
                         val = fp.GetValue()
                         typename = fp.GetTypeName()
-                        if (typename == 'SMD' and self.settings.get('BOMFile',{}).get('SMD')) or (typename != 'SMD' and self.settings.get('BOMFile',{}).get('THT')):
-                            if val in bomList:
-                                bomList[val]['ref'] += ',' + fp.GetReference()
-                                bomList[val]['qty'] = bomList[val]['qty'] + 1
+                        if typename == 'SMD' or bomParam.get('IncludeTHT'):
+                            side = 0 if fp.GetLayerName() == 'F.Cu' else 1
+                            if bomParam.get('MergeSide'):
+                                side = 0
+                            if val in bomList[side]:
+                                bomList[side][val]['ref'] += ',' + fp.GetReference()
+                                bomList[side][val]['qty'] = bomList[side][val]['qty'] + 1
                             else:
-                                bomList[val] = {'val':val, 'ref':fp.GetReference(), 'fp':fp.GetFPIDAsString().split(':')[1], 'qty':1}
-                                bomList[val].update(fp.GetProperties())
-                                bomList[val].update(getsubkey(val))
-                    with codecs.open(bom_fname, 'w', 'utf-8') as f:
-                        f.write(bomParam.get('Header') + '\r\n')
-                        rowformat = bomParam.get('Row')
-                        for val in bomList:
-                            row = strreplace(rowformat, bomList[val])
-                            f.write(row + '\r\n')
+                                bomList[side][val] = {'val':val, 'ref':fp.GetReference(), 'fp':fp.GetFPIDAsString().split(':')[1], 'qty':1}
+                                if hasattr(fp, 'GetProperties'):
+                                    bomList[side][val].update(fp.GetProperties())
+                                bomList[side][val].update(getsubkey(val))
+                    rowformat = bomParam.get('Row')
+                    tfBomTop = None
+                    header = bomParam.get('Header','')
+                    if len(bom_fnameT)>0:
+                        tfBomTop = tableFile(bom_fnameT)
+                        tfBomTop.setTabs(bomParam.get('Tabs'))
+                        if header != "":
+                            tfBomTop.addLine(header, {}, 'Header')
+                        for val in bomList[0]:
+                            tfBomTop.addLine(rowformat, bomList[0][val], 'Body')
+                        tfBomTop.close()
+                    tfBomBottom = None
+                    if len(bom_fnameB)>0:
+                        tfBomBottom = tableFile(bom_fnameB)
+                        tfBomBottom.setTabs(bomParam.get('Tabs'))
+                        if header != "":
+                            tfBomBottom.addLine(header, {}, 'Header')
+                        for val in bomList[1]:
+                            tfBomBottom.addLine(rowformat, bomList[1][val], 'Body')
+                        tfBomBottom.close()
 
                     # POS
                     message('POS')
-                    posParam = self.settings.get('PosFile')
-                    pos_fnameT = '%s/%s' % (gerber_dir, posParam.get('TopFilename').replace('*', board_basename))
-                    pos_fnameB = '%s/%s' % (gerber_dir, posParam.get('BottomFilename').replace('*', board_basename))
-
-                    with codecs.open(pos_fnameT, 'w', 'utf-8') as fT, codecs.open(pos_fnameB, 'w', 'utf-8') as fB:
-                        fT.write(strreplace(posParam.get('Header') + '\r\n', {'side':'top'}))
-                        fB.write(strreplace(posParam.get('Header') + '\r\n', {'side':'bottom'}))
-                        rowformat = posParam.get('Row')
-                        ds = board.GetDesignSettings()
-                        offset = wxPoint(0,0)
-                        # wxPoint in < 6.99, VECTOR2I in >=6.99 
-                        OffsetType = type(board.GetDesignSettings().GetAuxOrigin())
-                        offset = OffsetType(0,0)
-                        if self.settings.get('UseAuxOrigin',False):
-                            bds = board.GetDesignSettings()
-                            if hasattr(bds, 'GetAuxOrigin'):
-                                offset = bds.GetAuxOrigin()
+                    posParam = self.settings.get('PosFile',{})
+                    fnameT = posParam.get('TopFilename','')
+                    fnameB = posParam.get('BottomFilename','')
+                    pos_fnameT = ''
+                    pos_fnameB = ''
+                    if len(fnameT)>0:
+                        pos_fnameT = '%s/%s' % (gerber_dir, fnameT.replace('*', board_basename))
+                    if len(fnameB)>0 and not posParam.get('MergeSide'):
+                        pos_fnameB = '%s/%s' % (gerber_dir, fnameB.replace('*', board_basename))
+                    tfPosTop = None
+                    if len(pos_fnameT)>0:
+                        tfPosTop = tableFile(pos_fnameT)
+                        tfPosTop.setTabs(posParam.get('Tabs'))
+                        tfPosTop.addLine(posParam.get('Header'), {'side':'top'}, 'Header')
+                    tfPosBottom = None
+                    if len(pos_fnameB)>0:
+                        tfPosBottom = tableFile(pos_fnameB)
+                        tfPosBottom.setTabs(posParam.get('Tabs'))
+                        tfPosBottom.addLine(posParam.get('Header'), {'side':'bottom'}, 'Header')
+                    rowformat = posParam.get('Row')
+                    ds = board.GetDesignSettings()
+                    offset = wxPoint(0,0)
+                    # wxPoint in < 6.99, VECTOR2I in >=6.99 
+                    OffsetType = type(board.GetDesignSettings().GetAuxOrigin())
+                    offset = OffsetType(0,0)
+                    if self.settings.get('UseAuxOrigin',False):
+                        bds = board.GetDesignSettings()
+                        if hasattr(bds, 'GetAuxOrigin'):
+                            offset = bds.GetAuxOrigin()
+                        else:
+                            offset = bds.m_AuxOrigin
+                    for fp in board.GetFootprints():
+                        ref = fp.GetReference()
+                        val = fp.GetValue()
+                        subkey = getsubkey(val)
+                        rotoffs = float(subkey.get('DR') or 0)
+                        xoffs = float(subkey.get('DX') or 0)
+                        yoffs = float(subkey.get('DY') or 0)
+                        fpid = fp.GetFPIDAsString().split(':')[1]
+                        x = pcbnew.ToMM(fp.GetX() - offset.x) + xoffs
+                        y = pcbnew.ToMM(fp.GetY() - offset.y) + yoffs
+                        typename = fp.GetTypeName()
+                        rot = (fp.GetOrientationDegrees() + rotoffs) % 360
+                        side = 'top' if fp.GetLayerName() == 'F.Cu' else 'bottom'
+                        side1 = 'T' if fp.GetLayerName() == 'F.Cu' else 'B'
+                        if typename == 'SMD' or posParam.get('IncludeTHT'):
+                            dict = {'val':val, 'ref':ref, 'x':x, 'y':y, 'fp':fpid, 'type':typename, 'side':side, 'side1':side1, 'rot':rot}
+                            dict.update(subkey)
+                            row = strreplace(rowformat, dict)
+                            tabs = posParam.get('Tabs')
+                            if tabs:
+                                row = tabexp(row, tabs)
+                            if side1 == 'T' or posParam.get('MergeSide'):
+                                if tfPosTop != None:
+                                    tfPosTop.addLine(rowformat, dict, 'Body')
                             else:
-                                offset = bds.m_AuxOrigin
-                        for fp in board.GetFootprints():
-                            ref = fp.GetReference()
-                            val = fp.GetValue()
-                            subkey = getsubkey(val)
-                            rotoffs = float(subkey.get('DR') or 0)
-                            xoffs = float(subkey.get('DX') or 0)
-                            yoffs = float(subkey.get('DY') or 0)
-                            fpid = fp.GetFPIDAsString().split(':')[1]
-                            x = pcbnew.ToMM(fp.GetX() - offset.x) + xoffs
-                            y = pcbnew.ToMM(fp.GetY() - offset.y) + yoffs
-                            typename = fp.GetTypeName()
-                            rot = (fp.GetOrientationDegrees() + rotoffs) % 360
-                            side = 'top' if fp.GetLayerName() == 'F.Cu' else 'bottom'
-                            side1 = 'T' if fp.GetLayerName() == 'F.Cu' else 'B'
-                            if (typename == 'SMD' and self.settings.get('PosFile',{}).get('SMD')) or (typename != 'SMD' and self.settings.get('PosFile',{}).get('THT')):
-                                dict = {'val':val, 'ref':ref, 'x':x, 'y':y, 'fp':fpid, 'type':typename, 'side':side, 'side1':side1, 'rot':rot}
-                                dict.update(subkey)
-                                row = strreplace(rowformat, dict)
-                                tabs = posParam.get('Tabs')
-                                if tabs:
-                                    row = tabexp(row, tabs)
-                                if side1 == 'T':
-                                    fT.write(row + '\r\n')
-                                else:
-                                    fB.write(row + '\r\n')
-                        footer = posParam.get('Footer')
-                        if(footer):
-                            footerT = strreplace(posParam.get('Footer'), {'side':'top'})
-                            fT.write(footerT)
-                            footerB = strreplace(posParam.get('Footer'), {'side':'bottom'})
-                            fB.write(footerB)
-                    alert(getstr('BOMPOSCOMPLETE') % (bom_fname, pos_fnameT, pos_fnameB), wx.ICON_INFORMATION)
+                                if tfPosBottom != None:
+                                    tfPosBottom.addLine(rowformat, dict, 'Body')
+                    if tfPosTop != None:
+                        tfPosTop.addLine(posParam.get('Footer'), {'side':'top'}, 'Body')
+                        tfPosTop.close()
+                    if tfPosBottom != None:
+                        tfPosBottom.addLine(posParam.get('Footer'), {'side':'bottom'}, 'Body')
+                        tfPosBottom.close()
+
+                    alert2(getstr('BOMPOSCOMPLETE') % (bom_fnameT, bom_fnameB, pos_fnameT, pos_fnameB), wx.ICON_INFORMATION)
                 except Exception:
                     s=traceback.format_exc(chain=False)
                     print(s)
