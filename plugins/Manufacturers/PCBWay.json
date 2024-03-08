@@ -45,9 +45,9 @@
   },
   "MirrorYAxis":false,
   "MinimalHeader":true,
-  "MergePTHandNPTH":false,
+  "MergePTHandNPTH":true,
   "RouteModeForOvalHoles":true,
-  "DrillUnitMM":false,
+  "DrillUnitMM":true,
   "ZerosFormat":{
     "DecimalFormat":false,
     "SuppressLeading":true,
@@ -62,5 +62,23 @@
     "SVG":false,
     "PDF":false
   },
-  "OptionalFiles":[]
+  "OptionalFiles":[],
+  "BomFile":{
+    "TopFilename":"*-PCBWay-BOM.csv",
+    "BottomFilename":"",
+    "MergeSide":true,
+    "IncludeTHT":true,
+    "Tabs":[26, 26, 36, 25, 25, 10],
+    "Header": "designator,quantity,value,pack,mpn,mount_type",
+    "Row": "\"${ref}\",${qty},\"${val}\",\"${fp}\",\"${PN}\",\"${type}\""
+  },
+  "PosFile":{
+    "TopFilename":"*-PCBWay-POS-Top.csv",
+    "BottomFilename":"*-PCBWay-POS-Bottom.csv",
+    "MergeSide":false,
+    "IncludeTHT":false,
+    "Tabs":[10, 10, 10, 6, 10, 36, 8],
+    "Header": "Designator,Footprint,Mid X,Mid Y,TB,Rotation,Comment",
+    "Row": "\"${ref}\",\"${fp}\",${x},${y},\"${side1}\",${rot},\"${type}\""
+  }
 }

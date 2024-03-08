@@ -1,0 +1,41 @@
+# kicad-gerberzipper リポジトリ
+
+## バージョンの更新
+	gerber_zipper_action.py line 23
+	metadata.json line 37
+	README.md #### Note / #### 注
+
+## PCMパッケージ作成
+	wsl$ python makepackage.py
+		metadata.json
+		plugins/Locale/*
+		plugins/Manufacturers/*
+		plugins/Assets/*
+		plugins/gerber_zipper_action.py
+	
+## GitHub バージョンTag / Release 
+
+# kicad-pcm-repository リポジトリ
+
+## packages.json のversions に追加
+
+	* download_url
+	ファイルページの右上三点メニューから"Copy Permalink"
+		raw.githubusercontent.com/g200kg/kicad-gerberzipper/XXXXX/pcmpackage.zip
+	に書き換え
+
+  https://github.com/g200kg/kicad-gerberzipper/blob/d339073b3b79eb38438d12c2dbe79edc4779810e/pcmpackage.zip
+	↓
+  https://raw.githubusercontent.com/g200kg/kicad-gerberzipper/d339073b3b79eb38438d12c2dbe79edc4779810e/pcmpackage.zip
+
+	* download_size : zipのサイズ
+	* download_sha256 : wsl$ sha256sum pcmpackage.zip
+	* install_size : 展開したフォルダをエクスプローラで選択してプロパティ
+	* repository.json : wsl$ python update.py
+		e.g.
+		> "packages": {
+		>  "sha256": "5ee5b228c1523cd952a08159690174ee170e9011009297a00e76bfa11079e91a",
+		>  "update_time_utc": "2024-01-01 03:24:36",
+		>  "update_timestamp": 1704047076,
+		>  "url": "https://raw.githubusercontent.com/g200kg/kicad-pcm-repository/main/packages.json"
+		> }

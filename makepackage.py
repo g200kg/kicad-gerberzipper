@@ -15,4 +15,7 @@ with zipfile.ZipFile('pcmpackage.zip', 'w', compression=zipfile.ZIP_DEFLATED) as
     files = os.listdir('plugins/Manufacturers')
     for file in files:
         addfile(zf, 'plugins/Manufacturers/' + file)
+    files = os.listdir('plugins/Assets/')
+    for file in files:
+        addfile(zf, 'plugins/Assets/' + file)
     print('pcmpackage.zip complete')

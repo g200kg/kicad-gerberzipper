@@ -20,7 +20,7 @@ import inspect
 import traceback
 import re
 
-version = "1.1.4"
+version = "1.1.5"
 strtab = {}
 
 layer_list = [
@@ -751,6 +751,12 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                                 bomList[side][val] = {'val':val, 'ref':fp.GetReference(), 'fp':fp.GetFPIDAsString().split(':')[1], 'qty':1}
                                 if hasattr(fp, 'GetProperties'):
                                     bomList[side][val].update(fp.GetProperties())
+                                elif hasattr(fp, 'GetFields'):
+                                    flds = fp.GetFields()
+                                    for fld in flds:
+                                        name = fld.GetName()
+                                        txt = fld.GetText()
+                                        bomList[side][val][name] = txt
                                 bomList[side][val].update(getsubkey(val))
                     rowformat = bomParam.get('Row')
                     tfBomTop = None
