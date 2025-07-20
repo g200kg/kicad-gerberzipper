@@ -20,7 +20,7 @@ import inspect
 import traceback
 import re
 
-version = "1.1.5"
+version = "1.1.6"
 strtab = {}
 
 layer_list = [
@@ -889,17 +889,17 @@ class GerberZipperAction( pcbnew.ActionPlugin ):
                     po.SetPlotFrameRef( self.settings.get('PlotBorderAndTitle',False))
                     po.SetPlotValue( self.settings.get('PlotFootprintValues',True))
                     po.SetPlotReference( self.settings.get('PlotFootprintReferences',True))
-                    po.SetPlotInvisibleText( self.settings.get('ForcePlotInvisible',False))
-                    try: # kicad < 6.99
+                    if hasattr(po, 'SetPlotInvisibleText'):
+                        po.SetPlotInvisibleText( self.settings.get('ForcePlotInvisible',False))
+                    if hasattr(po, 'SetExcludeEdgeLayer'):
                         po.SetExcludeEdgeLayer( self.settings.get('ExcludeEdgeLayer',True))
-                    except AttributeError:
-                        pass
-                    if hasattr(po,'SetPlotPadsOnSilkLayer'):
+                    if hasattr(po, 'SetPlotPadsOnSilkLayer'):
                         po.SetPlotPadsOnSilkLayer( not self.settings.get('ExcludePadsFromSilk',False))
-                    po.SetPlotViaOnMaskLayer( self.settings.get('DoNotTentVias',False))
-                    if hasattr(po,'SetUseAuxOrigin'):
+                    if hasattr(po, 'SetPlotViaOnMaskLayer'):
+                        po.SetPlotViaOnMaskLayer( self.settings.get('DoNotTentVias',False))
+                    if hasattr(po, 'SetUseAuxOrigin'):
                         po.SetUseAuxOrigin(self.settings.get('UseAuxOrigin',False))
-                    if hasattr(po,'SetLineWidth'):
+                    if hasattr(po, 'SetLineWidth'):
                         po.SetLineWidth(FromMM(float(self.settings.get('LineWidth'))))
                     po.SetSubtractMaskFromSilk(self.settings.get('SubtractMaskFromSilk',True))
                     po.SetUseGerberX2format(self.settings.get('UseExtendedX2format',False))
