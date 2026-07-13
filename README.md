@@ -3,6 +3,9 @@
 <span id="en">[English]</span> | [[日本語]](#ja)
 
 ---
+**Due to updates in the KiCad plugin API specifications, this GerberZipper will no longer work with KiCad version 11.X or later. Please use the successor, 'Gerber Zipper 2', which supports the new API.**
+
+**Gerber Zipper 2 :** [https://github.com/g200kg/kicad-gerberzipper2](https://github.com/g200kg/kicad-gerberzipper2)
 
 ### Overview
 
@@ -194,6 +197,10 @@ Settings are written as `.json` files for each board manufacturer in the folder 
 ---
 
 [[English]](#) <span id="ja"> | [日本語]</span>
+
+**この GerberZipper は KiCad のプラグイン API の仕様変更のため KiCad バージョン 11.X 以降では動作しなくなります。新 API に対応した後継の 'Gerber Zipper 2' を使用してください。**
+
+**Gerber Zipper 2 :** [https://github.com/g200kg/kicad-gerberzipper2](https://github.com/g200kg/kicad-gerberzipper2)
 
 ### 概要
 
